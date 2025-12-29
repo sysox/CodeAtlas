@@ -1,0 +1,304 @@
+{
+  "tree_version": 1,
+  "project": {
+    "name": "CodeAtlas",
+    "summary": "Indexes a workspace into a variable-depth tree of nodes with deterministic summaries and fast indexes, stored under .atlas/. Supports both code and text artifacts and provides resolve + incremental update; later supports chunkers and materialization of generated leaves."
+  },
+  "nodes": [
+    {
+      "id": "P0",
+      "type": "project",
+      "path": ".",
+      "summary": "Root: atlas CLI + .atlas sidecar store + indexing + resolve + tests. This JSON is the authoritative evolving tree; .atlas/ is generated runtime state.",
+      "children": [
+        "F_pyproject",
+        "F_readme",
+        "F_cli",
+        "F_store_init",
+        "F_layout",
+        "F_model",
+        "F_scan",
+        "F_fingerprint",
+        "F_state",
+        "F_index",
+        "F_resolve",
+        "F_tests"
+      ],
+      "ext": {}
+    },
+
+    {
+      "id": "F_pyproject",
+      "type": "file",
+      "path": "pyproject.toml",
+      "summary": "Packaging config; src layout; console script atlas.",
+      "children": [],
+      "ext": {}
+    },
+    {
+      "id": "F_readme",
+      "type": "file",
+      "path": "README.md",
+      "summary": "User docs: what CodeAtlas does, quickstart, commands.",
+      "children": [],
+      "ext": {}
+    },
+
+    {
+      "id": "F_cli",
+      "type": "file",
+      "path": "src/codeatlas/cli.py",
+      "summary": "CLI entrypoint: atlas init/index/resolve (v1). Routes to store/index/resolve modules.",
+      "children": ["B_cli_main"],
+      "ext": {}
+    },
+    {
+      "id": "B_cli_main",
+      "type": "block",
+      "path": "src/codeatlas/cli.py",
+      "anchor": "main",
+      "summary": "Argparse CLI; dispatch to init/index/resolve; print JSON/text outputs.",
+      "children": [],
+      "ext": {}
+    },
+
+    {
+      "id": "F_store_init",
+      "type": "file",
+      "path": "src/codeatlas/store_init.py",
+      "summary": "Initialize .atlas/ directory layout and default cfg.json; ensure directories exist.",
+      "children": ["B_default_cfg", "B_init_workspace"],
+      "ext": {}
+    },
+    {
+      "id": "B_default_cfg",
+      "type": "block",
+      "path": "src/codeatlas/store_init.py",
+      "anchor": "DEFAULT_CFG",
+      "summary": "Default config: include/exclude globs, thresholds, summary settings.",
+      "children": [],
+      "ext": {}
+    },
+    {
+      "id": "B_init_workspace",
+      "type": "block",
+      "path": "src/codeatlas/store_init.py",
+      "anchor": "init_workspace",
+      "summary": "Create .atlas structure, write cfg.json if missing, create empty state files.",
+      "children": [],
+      "ext": {}
+    },
+
+    {
+      "id": "F_layout",
+      "type": "file",
+      "path": "src/codeatlas/layout.py",
+      "summary": "Sidecar path manager (AtlasPaths): returns paths for cfg, nodes.jsonl, indexes, blobs, fingerprints.",
+      "children": ["B_atlaspaths"],
+      "ext": {}
+    },
+    {
+      "id": "B_atlaspaths",
+      "type": "block",
+      "path": "src/codeatlas/layout.py",
+      "anchor": "AtlasPaths",
+      "summary": "Class with properties for canonical+derived paths in .atlas/.",
+      "children": [],
+      "ext": {}
+    },
+
+    {
+      "id": "F_model",
+      "type": "file",
+      "path": "src/codeatlas/model.py",
+      "summary": "Core Node schema (dict/dataclass), ID conventions, and serialization helpers.",
+      "children": ["B_node", "B_id_helpers"],
+      "ext": {}
+    },
+    {
+      "id": "B_node",
+      "type": "block",
+      "path": "src/codeatlas/model.py",
+      "anchor": "Node",
+      "summary": "Node fields: id,type,role,path,anchor,summary_auto,children,content_ref,span_hint,meta; to_dict/from_dict.",
+      "children": [],
+      "ext": {}
+    },
+    {
+      "id": "B_id_helpers",
+      "type": "block",
+      "path": "src/codeatlas/model.py",
+      "anchor": "make_id",
+      "summary": "Deterministic IDs from (role,kind,path,anchor); avoid line numbers.",
+      "children": [],
+      "ext": {}
+    },
+
+    {
+      "id": "F_scan",
+      "type": "file",
+      "path": "src/codeatlas/scan.py",
+      "summary": "Scan workspace files by include/exclude globs; stable ordering.",
+      "children": ["B_scan_files"],
+      "ext": {}
+    },
+    {
+      "id": "B_scan_files",
+      "type": "block",
+      "path": "src/codeatlas/scan.py",
+      "anchor": "scan_files",
+      "summary": "Return list of relative paths to index.",
+      "children": [],
+      "ext": {}
+    },
+
+    {
+      "id": "F_fingerprint",
+      "type": "file",
+      "path": "src/codeatlas/fingerprint.py",
+      "summary": "Compute sha256 fingerprints and diff to enable incremental indexing.",
+      "children": ["B_fp_compute", "B_fp_diff", "B_fp_io"],
+      "ext": {}
+    },
+    {
+      "id": "B_fp_compute",
+      "type": "block",
+      "path": "src/codeatlas/fingerprint.py",
+      "anchor": "fingerprint_file",
+      "summary": "sha256(file_bytes)->hex/ref for change detection.",
+      "children": [],
+      "ext": {}
+    },
+    {
+      "id": "B_fp_diff",
+      "type": "block",
+      "path": "src/codeatlas/fingerprint.py",
+      "anchor": "diff_fingerprints",
+      "summary": "Compute changed/new/deleted sets from old/new maps.",
+      "children": [],
+      "ext": {}
+    },
+    {
+      "id": "B_fp_io",
+      "type": "block",
+      "path": "src/codeatlas/fingerprint.py",
+      "anchor": "load_fingerprints",
+      "summary": "Load/save fingerprints.json.",
+      "children": [],
+      "ext": {}
+    },
+
+    {
+      "id": "F_state",
+      "type": "file",
+      "path": "src/codeatlas/state.py",
+      "summary": "Read/write nodes.jsonl and index json files (paths, symbols, headings).",
+      "children": ["B_state_nodes", "B_state_indexes"],
+      "ext": {}
+    },
+    {
+      "id": "B_state_nodes",
+      "type": "block",
+      "path": "src/codeatlas/state.py",
+      "anchor": "load_nodes",
+      "summary": "Load/write nodes.jsonl; return id->node.",
+      "children": [],
+      "ext": {}
+    },
+    {
+      "id": "B_state_indexes",
+      "type": "block",
+      "path": "src/codeatlas/state.py",
+      "anchor": "load_indexes",
+      "summary": "Load/write indexes (paths.json etc.).",
+      "children": [],
+      "ext": {}
+    },
+
+    {
+      "id": "F_index",
+      "type": "file",
+      "path": "src/codeatlas/index.py",
+      "summary": "Orchestrate indexing: scan, fingerprint diff, build file-level nodes (v1), update path index, persist state.",
+      "children": ["B_index_update"],
+      "ext": {}
+    },
+    {
+      "id": "B_index_update",
+      "type": "block",
+      "path": "src/codeatlas/index.py",
+      "anchor": "build_or_update",
+      "summary": "Main entry: updates .atlas/tree from workspace; returns stats.",
+      "children": [],
+      "ext": {}
+    },
+
+    {
+      "id": "F_resolve",
+      "type": "file",
+      "path": "src/codeatlas/resolve.py",
+      "summary": "Resolve by node id/path; return content (whole file in v1).",
+      "children": ["B_resolve_by_path", "B_resolve_content"],
+      "ext": {}
+    },
+    {
+      "id": "B_resolve_by_path",
+      "type": "block",
+      "path": "src/codeatlas/resolve.py",
+      "anchor": "lookup_path",
+      "summary": "Lookup node id by relpath using paths index.",
+      "children": [],
+      "ext": {}
+    },
+    {
+      "id": "B_resolve_content",
+      "type": "block",
+      "path": "src/codeatlas/resolve.py",
+      "anchor": "resolve_content",
+      "summary": "Return node content (ptr/file read in v1; later spans/blobs).",
+      "children": [],
+      "ext": {}
+    },
+
+    {
+      "id": "F_tests",
+      "type": "file_group",
+      "path": "tests/",
+      "summary": "Tests for init/index/resolve; deterministic fixtures.",
+      "children": ["T_smoke", "T_init", "T_index_basic", "T_resolve"],
+      "ext": {}
+    },
+    {
+      "id": "T_smoke",
+      "type": "file",
+      "path": "tests/test_smoke.py",
+      "summary": "Import test.",
+      "children": [],
+      "ext": {}
+    },
+    {
+      "id": "T_init",
+      "type": "file",
+      "path": "tests/test_init.py",
+      "summary": "atlas init creates expected .atlas paths.",
+      "children": [],
+      "ext": {}
+    },
+    {
+      "id": "T_index_basic",
+      "type": "file",
+      "path": "tests/test_index_basic.py",
+      "summary": "index creates nodes+paths index for a temp workspace.",
+      "children": [],
+      "ext": {}
+    },
+    {
+      "id": "T_resolve",
+      "type": "file",
+      "path": "tests/test_resolve.py",
+      "summary": "resolve returns file content for indexed file.",
+      "children": [],
+      "ext": {}
+    }
+  ]
+}
