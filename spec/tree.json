@@ -1,0 +1,49 @@
+{
+  "tree_version": 1,
+  "project": {
+    "name": "CodeAtlas",
+    "summary": "Indexes a repo into a node tree under .atlas/ with deterministic summaries and indexes. Provides resolve and later chunkers/materialization."
+  },
+  "nodes": [
+    {
+      "id": "P0",
+      "type": "project",
+      "path": ".",
+      "summary": "Root: atlas init/index/resolve. Sidecar .atlas/. Later: chunkers, ops, materialize.",
+      "children": ["F_cli", "F_init", "F_index", "F_resolve"],
+      "ext": {}
+    },
+    {
+      "id": "F_cli",
+      "type": "file",
+      "path": "src/codeatlas/cli.py",
+      "summary": "CLI entrypoint for atlas commands.",
+      "children": [],
+      "ext": {}
+    },
+    {
+      "id": "F_init",
+      "type": "file",
+      "path": "src/codeatlas/store_init.py",
+      "summary": "Create .atlas/ layout and default config.",
+      "children": [],
+      "ext": {}
+    },
+    {
+      "id": "F_index",
+      "type": "file",
+      "path": "src/codeatlas/index.py",
+      "summary": "Scan workspace, fingerprint diff, build/update nodes+indexes.",
+      "children": [],
+      "ext": {}
+    },
+    {
+      "id": "F_resolve",
+      "type": "file",
+      "path": "src/codeatlas/resolve.py",
+      "summary": "Lookup by path/id and return exact content (whole file first).",
+      "children": [],
+      "ext": {}
+    }
+  ]
+}
