@@ -3,10 +3,10 @@ from pathlib import Path
 from codeatlas.store_init import init_workspace
 from codeatlas.index import build_or_update
 from codeatlas.layout import AtlasPaths
-from codeatlas.state import load_json
+from codeatlas.state import load_json, load_nodes_map
 
 
-def test_index_creates_paths_index(tmp_path: Path):
+def test_index_creates_paths_index_and_meta(tmp_path: Path):
     (tmp_path / "a.txt").write_text("hello\n", encoding="utf-8")
     (tmp_path / "b.md").write_text("# title\n", encoding="utf-8")
 
@@ -18,3 +18,12 @@ def test_index_creates_paths_index(tmp_path: Path):
     idx = load_json(ap.paths_index_path, default={})
     assert "a.txt" in idx
     assert "b.md" in idx
+
+    nodes = load_nodes_map(ap.nodes_path)
+    a_id = idx["a.txt"]
+    a_node = nodes[a_id]
+    assert a_node["type"] == "file"
+    assert a_node["path"] == "a.txt"
+    assert a_node["meta"]["kind"] == "txt"
+    assert a_node["meta"]["bytes"] == 6
+    assert isinstance(a_node["meta"].get("sha256"), str)

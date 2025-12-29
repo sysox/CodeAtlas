@@ -1,16 +1,22 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Optional
+from typing import Optional, Dict, Any
 
 from codeatlas.layout import AtlasPaths
-from codeatlas.state import load_json
+from codeatlas.state import load_json, load_nodes_map
 
 
 def lookup_path(root: Path, relpath: str) -> Optional[str]:
     ap = AtlasPaths(root.resolve())
     idx = load_json(ap.paths_index_path, default={})
     return idx.get(relpath)
+
+
+def resolve_node(root: Path, node_id: str) -> Optional[Dict[str, Any]]:
+    ap = AtlasPaths(root.resolve())
+    nodes = load_nodes_map(ap.nodes_path)
+    return nodes.get(node_id)
 
 
 def resolve_content(root: Path, node_id: str) -> str:

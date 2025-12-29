@@ -6,7 +6,7 @@ from pathlib import Path
 
 from codeatlas.store_init import init_workspace
 from codeatlas.index import build_or_update
-from codeatlas.resolve import lookup_path, resolve_content
+from codeatlas.resolve import lookup_path, resolve_content, resolve_node
 
 
 def main(argv=None) -> int:
@@ -25,6 +25,12 @@ def main(argv=None) -> int:
     g.add_argument("--path", help="Relative path in workspace")
     g.add_argument("--id", help="Node id")
     sp_res.add_argument("--content", action="store_true", help="Print resolved content (v1: whole file)")
+
+    sp_show = sub.add_parser("show", help="Show node JSON")
+    sp_show.add_argument("--root", default=".", help="Workspace root")
+    g2 = sp_show.add_mutually_exclusive_group(required=True)
+    g2.add_argument("--path", help="Relative path in workspace")
+    g2.add_argument("--id", help="Node id")
 
     args = p.parse_args(argv)
     root = Path(getattr(args, "root", ".")).resolve()
@@ -53,11 +59,27 @@ def main(argv=None) -> int:
 
         if args.content:
             content = resolve_content(root, node_id=node_id)
-            # content is printed raw for user convenience
             print(content, end="" if content.endswith("\n") else "\n")
             return 0
 
         print(json.dumps({"ok": True, "id": node_id}, ensure_ascii=False, indent=2))
+        return 0
+
+    if args.cmd == "show":
+        init_workspace(root)
+        if args.path:
+            node_id = lookup_path(root, args.path)
+            if node_id is None:
+                print(json.dumps({"ok": False, "error": "path not found", "path": args.path}, indent=2))
+                return 2
+        else:
+            node_id = args.id
+
+        node = resolve_node(root, node_id)
+        if node is None:
+            print(json.dumps({"ok": False, "error": "node not found", "id": node_id}, indent=2))
+            return 2
+        print(json.dumps({"ok": True, "node": node}, ensure_ascii=False, indent=2))
         return 0
 
     return 0

@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import json
 from pathlib import Path
 from typing import Any, Dict, List
 
@@ -9,6 +8,25 @@ from codeatlas.model import Node, make_id
 from codeatlas.scan import scan_files
 from codeatlas.fingerprint import build_fingerprints, diff_fingerprints
 from codeatlas.state import load_json, write_json, write_nodes_jsonl
+
+
+def _kind_from_path(relpath: str) -> str:
+    rp = relpath.lower()
+    if rp.endswith(".py"):
+        return "py"
+    if rp.endswith(".md"):
+        return "md"
+    if rp.endswith(".tex"):
+        return "tex"
+    if rp.endswith(".json"):
+        return "json"
+    if rp.endswith(".yaml") or rp.endswith(".yml"):
+        return "yaml"
+    if rp.endswith(".toml"):
+        return "toml"
+    if rp.endswith(".txt"):
+        return "txt"
+    return "other"
 
 
 def build_or_update(root: Path) -> Dict[str, Any]:
@@ -38,8 +56,10 @@ def build_or_update(root: Path) -> Dict[str, Any]:
     for rp in relpaths:
         p = root / rp
         try:
-            if p.is_file() and p.stat().st_size > max_file_bytes:
-                # skip very large files in v1
+            if not p.is_file():
+                continue
+            size = p.stat().st_size
+            if size > max_file_bytes:
                 continue
         except FileNotFoundError:
             continue
@@ -47,7 +67,14 @@ def build_or_update(root: Path) -> Dict[str, Any]:
         nid = make_id("path", rp)
         file_ids.append(nid)
         path_index[rp] = nid
-        n = Node(id=nid, type="file", path=rp, summary=None, children=[])
+
+        meta = {
+            "kind": _kind_from_path(rp),
+            "bytes": int(size),
+            "sha256": new_fp.get(rp)
+        }
+
+        n = Node(id=nid, type="file", path=rp, summary=None, children=[], meta=meta)
         nodes.append(n.to_dict())
 
     nodes.insert(0, Node(id=root_id, type="project", path=".", summary="workspace root", children=file_ids).to_dict())

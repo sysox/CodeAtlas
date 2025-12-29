@@ -31,6 +31,16 @@ def load_nodes_jsonl(path: Path) -> List[Dict[str, Any]]:
     return out
 
 
+def load_nodes_map(path: Path) -> Dict[str, Dict[str, Any]]:
+    nodes = load_nodes_jsonl(path)
+    out: Dict[str, Dict[str, Any]] = {}
+    for n in nodes:
+        nid = n.get("id")
+        if isinstance(nid, str):
+            out[nid] = n
+    return out
+
+
 def write_nodes_jsonl(path: Path, nodes: Iterable[Dict[str, Any]]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     lines = [json.dumps(n, ensure_ascii=False) for n in nodes]
