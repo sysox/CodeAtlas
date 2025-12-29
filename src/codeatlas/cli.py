@@ -7,6 +7,7 @@ from pathlib import Path
 from codeatlas.store_init import init_workspace
 from codeatlas.index import build_or_update
 from codeatlas.resolve import lookup_path, resolve_content, resolve_node
+from codeatlas.ctx import build_ctx
 
 
 def main(argv=None) -> int:
@@ -31,6 +32,15 @@ def main(argv=None) -> int:
     g2 = sp_show.add_mutually_exclusive_group(required=True)
     g2.add_argument("--path", help="Relative path in workspace")
     g2.add_argument("--id", help="Node id")
+
+    sp_ctx = sub.add_parser("ctx", help="Export minimal structured context for LLMs")
+    sp_ctx.add_argument("--root", default=".", help="Workspace root")
+    sp_ctx.add_argument("--path", action="append", default=[], help="Relative path to include (repeatable)")
+    sp_ctx.add_argument("--id", action="append", default=[], help="Node id to include (repeatable)")
+    sp_ctx.add_argument("--content", action="store_true", help="Include content text")
+    sp_ctx.add_argument("--head", type=int, default=None, help="Include only first N lines")
+    sp_ctx.add_argument("--tail", type=int, default=None, help="Include only last N lines")
+    sp_ctx.add_argument("--max-bytes", type=int, default=None, help="Cap content bytes (UTF-8); truncates if needed")
 
     args = p.parse_args(argv)
     root = Path(getattr(args, "root", ".")).resolve()
@@ -81,5 +91,19 @@ def main(argv=None) -> int:
             return 2
         print(json.dumps({"ok": True, "node": node}, ensure_ascii=False, indent=2))
         return 0
+
+    if args.cmd == "ctx":
+        init_workspace(root)
+        bundle = build_ctx(
+            root=root,
+            paths=list(args.path or []),
+            ids=list(args.id or []),
+            content=bool(args.content),
+            head=args.head,
+            tail=args.tail,
+            max_bytes=args.max_bytes
+        )
+        print(json.dumps(bundle, ensure_ascii=False, indent=2))
+        return 0 if bundle.get("ok") else 2
 
     return 0
