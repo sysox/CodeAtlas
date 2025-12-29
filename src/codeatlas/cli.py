@@ -8,6 +8,7 @@ from codeatlas.store_init import init_workspace
 from codeatlas.index import build_or_update
 from codeatlas.resolve import lookup_path, resolve_content, resolve_node
 from codeatlas.ctx import build_ctx
+from codeatlas.py_symbols import list_python_symbols
 
 
 def main(argv=None) -> int:
@@ -41,6 +42,10 @@ def main(argv=None) -> int:
     sp_ctx.add_argument("--head", type=int, default=None, help="Include only first N lines")
     sp_ctx.add_argument("--tail", type=int, default=None, help="Include only last N lines")
     sp_ctx.add_argument("--max-bytes", type=int, default=None, help="Cap content bytes (UTF-8); truncates if needed")
+
+    sp_syms = sub.add_parser("py-symbols", help="List Python symbols (qualnames + line spans)")
+    sp_syms.add_argument("--root", default=".", help="Workspace root")
+    sp_syms.add_argument("--path", required=True, help="Python file relative path")
 
     args = p.parse_args(argv)
     root = Path(getattr(args, "root", ".")).resolve()
@@ -105,5 +110,14 @@ def main(argv=None) -> int:
         )
         print(json.dumps(bundle, ensure_ascii=False, indent=2))
         return 0 if bundle.get("ok") else 2
+
+    if args.cmd == "py-symbols":
+        pth = (root / args.path).resolve()
+        if not pth.exists():
+            print(json.dumps({"ok": False, "error": "file not found", "path": args.path}, indent=2))
+            return 2
+        syms = list_python_symbols(pth)
+        print(json.dumps({"ok": True, "path": args.path, "symbols": syms}, ensure_ascii=False, indent=2))
+        return 0
 
     return 0
