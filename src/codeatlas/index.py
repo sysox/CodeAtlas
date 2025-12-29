@@ -18,7 +18,7 @@ def build_or_update(root: Path) -> Dict[str, Any]:
     ap.ensure_dirs()
 
     cfg = load_json(ap.cfg_path, default={})
-    include = cfg.get("include", ["**/*"])
+    include = cfg.get("include", ["*"])
     exclude = cfg.get("exclude", [".git/**", ".atlas/**", ".venv/**"])
     max_file_bytes = int(cfg.get("max_file_bytes", 2_000_000))
 

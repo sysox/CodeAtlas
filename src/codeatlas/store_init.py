@@ -8,7 +8,7 @@ from codeatlas.layout import AtlasPaths
 
 
 DEFAULT_CFG: Dict[str, Any] = {
-    "include": ["**/*"],
+    "include": ["*"],
     "exclude": [
         ".git/**",
         ".venv/**",
