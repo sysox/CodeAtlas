@@ -11,6 +11,7 @@ from codeatlas.ctx import build_ctx
 from codeatlas.py_symbols import list_python_symbols
 from codeatlas.patch_skel import patch_skeleton
 from codeatlas.plan import build_plan
+from codeatlas.diff import compute_diff
 
 
 def main(argv=None) -> int:
@@ -22,6 +23,9 @@ def main(argv=None) -> int:
 
     sp_index = sub.add_parser("index", help="Index workspace into .atlas/")
     sp_index.add_argument("--root", default=".", help="Workspace root")
+
+    sp_diff = sub.add_parser("diff", help="Show added/changed/deleted since last index")
+    sp_diff.add_argument("--root", default=".", help="Workspace root")
 
     sp_res = sub.add_parser("resolve", help="Resolve a node and optionally print content")
     sp_res.add_argument("--root", default=".", help="Workspace root")
@@ -81,6 +85,12 @@ def main(argv=None) -> int:
         init_workspace(root)
         stats = build_or_update(root)
         print(json.dumps(stats, ensure_ascii=False, indent=2))
+        return 0
+
+    if args.cmd == "diff":
+        init_workspace(root)
+        d = compute_diff(root)
+        print(json.dumps(d, ensure_ascii=False, indent=2))
         return 0
 
     if args.cmd == "resolve":
