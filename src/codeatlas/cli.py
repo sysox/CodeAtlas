@@ -12,6 +12,7 @@ from codeatlas.py_symbols import list_python_symbols
 from codeatlas.patch_skel import patch_skeleton
 from codeatlas.plan import build_plan, build_plan_multi, parse_target
 from codeatlas.diff import compute_diff
+from codeatlas.grep import grep_snippets
 
 
 def main(argv=None) -> int:
@@ -26,6 +27,13 @@ def main(argv=None) -> int:
 
     sp_diff = sub.add_parser("diff", help="Show added/changed/deleted since last index")
     sp_diff.add_argument("--root", default=".", help="Workspace root")
+
+    sp_grep = sub.add_parser("grep", help="Export small regex-matched snippets for LLM context")
+    sp_grep.add_argument("--root", default=".", help="Workspace root")
+    sp_grep.add_argument("--path", required=True, help="Target relative path")
+    sp_grep.add_argument("--pattern", required=True, help="Regex pattern")
+    sp_grep.add_argument("--context", type=int, default=2, help="Context lines around match")
+    sp_grep.add_argument("--max-matches", type=int, default=20, help="Maximum matches")
 
     sp_res = sub.add_parser("resolve", help="Resolve a node and optionally print content")
     sp_res.add_argument("--root", default=".", help="Workspace root")
@@ -63,7 +71,6 @@ def main(argv=None) -> int:
     sp_plan = sub.add_parser("plan", help="One-shot bundle: ctx + py-symbols + patch skeleton")
     sp_plan.add_argument("--root", default=".", help="Workspace root")
     sp_plan.add_argument("--target", action="append", default=[], help="Target: path or path::qualname (repeatable)")
-    # legacy single-target args
     sp_plan.add_argument("--path", default=None, help="Target relative path (legacy)")
     sp_plan.add_argument("--qualname", default=None, help="Python qualname for replace_symbol (legacy)")
 
@@ -95,6 +102,12 @@ def main(argv=None) -> int:
         d = compute_diff(root)
         print(json.dumps(d, ensure_ascii=False, indent=2))
         return 0
+
+    if args.cmd == "grep":
+        init_workspace(root)
+        out = grep_snippets(root=root, path=args.path, pattern=args.pattern, context=args.context, max_matches=args.max_matches)
+        print(json.dumps(out, ensure_ascii=False, indent=2))
+        return 0 if out.get("ok") else 2
 
     if args.cmd == "resolve":
         init_workspace(root)
