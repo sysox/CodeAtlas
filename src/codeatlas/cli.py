@@ -10,6 +10,7 @@ from codeatlas.resolve import lookup_path, resolve_content, resolve_node
 from codeatlas.ctx import build_ctx
 from codeatlas.py_symbols import list_python_symbols
 from codeatlas.patch_skel import patch_skeleton
+from codeatlas.plan import build_plan
 
 
 def main(argv=None) -> int:
@@ -54,6 +55,18 @@ def main(argv=None) -> int:
     sp_patch.add_argument("--op", default="replace_symbol", choices=["replace_symbol", "replace_file"], help="Skeleton op")
     sp_patch.add_argument("--run", action="append", default=None, help="Command to run after apply (repeatable)")
     sp_patch.add_argument("--commit", default=None, help="Commit message placeholder")
+
+    sp_plan = sub.add_parser("plan", help="One-shot bundle: ctx + py-symbols + patch skeleton")
+    sp_plan.add_argument("--root", default=".", help="Workspace root")
+    sp_plan.add_argument("--path", required=True, help="Target relative path")
+    sp_plan.add_argument("--qualname", default=None, help="Python qualname for replace_symbol (optional)")
+    sp_plan.add_argument("--op", default="replace_symbol", choices=["replace_symbol", "replace_file"], help="Skeleton op")
+    sp_plan.add_argument("--content", action="store_true", help="Include content text")
+    sp_plan.add_argument("--head", type=int, default=None, help="Include only first N lines")
+    sp_plan.add_argument("--tail", type=int, default=None, help="Include only last N lines")
+    sp_plan.add_argument("--max-bytes", type=int, default=None, help="Cap content bytes (UTF-8); truncates if needed")
+    sp_plan.add_argument("--run", action="append", default=None, help="Command to run after apply (repeatable)")
+    sp_plan.add_argument("--commit", default=None, help="Commit message placeholder")
 
     args = p.parse_args(argv)
     root = Path(getattr(args, "root", ".")).resolve()
@@ -138,5 +151,22 @@ def main(argv=None) -> int:
         )
         print(json.dumps(pkt, ensure_ascii=False, indent=2))
         return 0
+
+    if args.cmd == "plan":
+        init_workspace(root)
+        out = build_plan(
+            root=root,
+            path=args.path,
+            qualname=args.qualname,
+            content=bool(args.content),
+            head=args.head,
+            tail=args.tail,
+            max_bytes=args.max_bytes,
+            op=args.op,
+            run=args.run,
+            commit=args.commit
+        )
+        print(json.dumps(out, ensure_ascii=False, indent=2))
+        return 0 if out.get("ok") else 2
 
     return 0
