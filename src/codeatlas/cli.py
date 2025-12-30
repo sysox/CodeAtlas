@@ -9,6 +9,7 @@ from codeatlas.index import build_or_update
 from codeatlas.resolve import lookup_path, resolve_content, resolve_node
 from codeatlas.ctx import build_ctx
 from codeatlas.py_symbols import list_python_symbols
+from codeatlas.py_extract import extract_qualname_source
 from codeatlas.patch_skel import patch_skeleton
 from codeatlas.plan import build_plan, build_plan_multi, parse_target
 from codeatlas.diff import compute_diff
@@ -34,6 +35,12 @@ def main(argv=None) -> int:
     sp_grep.add_argument("--pattern", required=True, help="Regex pattern")
     sp_grep.add_argument("--context", type=int, default=2, help="Context lines around match")
     sp_grep.add_argument("--max-matches", type=int, default=20, help="Maximum matches")
+
+    sp_snip = sub.add_parser("py-snippet", help="Extract exact Python symbol source by qualname")
+    sp_snip.add_argument("--root", default=".", help="Workspace root")
+    sp_snip.add_argument("--path", required=True, help="Python file relative path")
+    sp_snip.add_argument("--qualname", required=True, help="Qualname (e.g., f, A.m)")
+    sp_snip.add_argument("--context", type=int, default=0, help="Extra context lines")
 
     sp_res = sub.add_parser("resolve", help="Resolve a node and optionally print content")
     sp_res.add_argument("--root", default=".", help="Workspace root")
@@ -106,6 +113,15 @@ def main(argv=None) -> int:
     if args.cmd == "grep":
         init_workspace(root)
         out = grep_snippets(root=root, path=args.path, pattern=args.pattern, context=args.context, max_matches=args.max_matches)
+        print(json.dumps(out, ensure_ascii=False, indent=2))
+        return 0 if out.get("ok") else 2
+
+    if args.cmd == "py-snippet":
+        pth = (root / args.path).resolve()
+        out = extract_qualname_source(pth, args.qualname, context=args.context)
+        # normalize path in output
+        if out.get("ok"):
+            out["path"] = args.path
         print(json.dumps(out, ensure_ascii=False, indent=2))
         return 0 if out.get("ok") else 2
 

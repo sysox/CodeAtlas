@@ -15,10 +15,10 @@ def test_plan_multi_two_targets(tmp_path: Path):
     out = build_plan_multi(
         root=tmp_path,
         targets=[Target("a.py", "f"), Target("README.md", None)],
-        content=True,
-        head=50,
+        content=False,
+        head=None,
         tail=None,
-        max_bytes=5000,
+        max_bytes=None,
         op="replace_symbol",
         run=["pytest -q"],
         commit="x"
@@ -28,6 +28,11 @@ def test_plan_multi_two_targets(tmp_path: Path):
     paths = [it["node"]["path"] for it in out["ctx"]["items"]]
     assert "a.py" in paths and "README.md" in paths
     assert "a.py" in out["py_symbols_by_path"]
+
+    # snippet should exist for the qualname target
+    snips = [s for s in out.get("symbol_snippets", []) if s.get("ok") and s.get("path") == "a.py"]
+    assert snips and "def f" in snips[0]["text"]
+
     assert len(out["patches"]) == 2
     assert out["patches"][0]["ops"][0]["op"] == "replace_symbol"
     assert out["patches"][1]["ops"][0]["op"] == "replace_file"
