@@ -9,6 +9,7 @@ from codeatlas.index import build_or_update
 from codeatlas.resolve import lookup_path, resolve_content, resolve_node
 from codeatlas.ctx import build_ctx
 from codeatlas.py_symbols import list_python_symbols
+from codeatlas.patch_skel import patch_skeleton
 
 
 def main(argv=None) -> int:
@@ -46,6 +47,13 @@ def main(argv=None) -> int:
     sp_syms = sub.add_parser("py-symbols", help="List Python symbols (qualnames + line spans)")
     sp_syms.add_argument("--root", default=".", help="Workspace root")
     sp_syms.add_argument("--path", required=True, help="Python file relative path")
+
+    sp_patch = sub.add_parser("patch", help="Generate BridgePacket skeleton for a change")
+    sp_patch.add_argument("--path", required=True, help="Target relative path")
+    sp_patch.add_argument("--qualname", default=None, help="Python qualname for replace_symbol (optional)")
+    sp_patch.add_argument("--op", default="replace_symbol", choices=["replace_symbol", "replace_file"], help="Skeleton op")
+    sp_patch.add_argument("--run", action="append", default=None, help="Command to run after apply (repeatable)")
+    sp_patch.add_argument("--commit", default=None, help="Commit message placeholder")
 
     args = p.parse_args(argv)
     root = Path(getattr(args, "root", ".")).resolve()
@@ -118,6 +126,17 @@ def main(argv=None) -> int:
             return 2
         syms = list_python_symbols(pth)
         print(json.dumps({"ok": True, "path": args.path, "symbols": syms}, ensure_ascii=False, indent=2))
+        return 0
+
+    if args.cmd == "patch":
+        pkt = patch_skeleton(
+            path=args.path,
+            qualname=args.qualname,
+            op=args.op,
+            run=args.run,
+            commit=args.commit
+        )
+        print(json.dumps(pkt, ensure_ascii=False, indent=2))
         return 0
 
     return 0
