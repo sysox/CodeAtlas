@@ -10,7 +10,7 @@ from codeatlas.resolve import lookup_path, resolve_content, resolve_node
 from codeatlas.ctx import build_ctx
 from codeatlas.py_symbols import list_python_symbols
 from codeatlas.patch_skel import patch_skeleton
-from codeatlas.plan import build_plan
+from codeatlas.plan import build_plan, build_plan_multi, parse_target
 from codeatlas.diff import compute_diff
 
 
@@ -62,8 +62,11 @@ def main(argv=None) -> int:
 
     sp_plan = sub.add_parser("plan", help="One-shot bundle: ctx + py-symbols + patch skeleton")
     sp_plan.add_argument("--root", default=".", help="Workspace root")
-    sp_plan.add_argument("--path", required=True, help="Target relative path")
-    sp_plan.add_argument("--qualname", default=None, help="Python qualname for replace_symbol (optional)")
+    sp_plan.add_argument("--target", action="append", default=[], help="Target: path or path::qualname (repeatable)")
+    # legacy single-target args
+    sp_plan.add_argument("--path", default=None, help="Target relative path (legacy)")
+    sp_plan.add_argument("--qualname", default=None, help="Python qualname for replace_symbol (legacy)")
+
     sp_plan.add_argument("--op", default="replace_symbol", choices=["replace_symbol", "replace_file"], help="Skeleton op")
     sp_plan.add_argument("--content", action="store_true", help="Include content text")
     sp_plan.add_argument("--head", type=int, default=None, help="Include only first N lines")
@@ -164,18 +167,35 @@ def main(argv=None) -> int:
 
     if args.cmd == "plan":
         init_workspace(root)
-        out = build_plan(
-            root=root,
-            path=args.path,
-            qualname=args.qualname,
-            content=bool(args.content),
-            head=args.head,
-            tail=args.tail,
-            max_bytes=args.max_bytes,
-            op=args.op,
-            run=args.run,
-            commit=args.commit
-        )
+        if args.target:
+            targets = [parse_target(t) for t in args.target]
+            out = build_plan_multi(
+                root=root,
+                targets=targets,
+                content=bool(args.content),
+                head=args.head,
+                tail=args.tail,
+                max_bytes=args.max_bytes,
+                op=args.op,
+                run=args.run,
+                commit=args.commit
+            )
+        else:
+            if not args.path:
+                print(json.dumps({"ok": False, "error": "provide --target or --path"}, indent=2))
+                return 2
+            out = build_plan(
+                root=root,
+                path=args.path,
+                qualname=args.qualname,
+                content=bool(args.content),
+                head=args.head,
+                tail=args.tail,
+                max_bytes=args.max_bytes,
+                op=args.op,
+                run=args.run,
+                commit=args.commit
+            )
         print(json.dumps(out, ensure_ascii=False, indent=2))
         return 0 if out.get("ok") else 2
 

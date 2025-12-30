@@ -1,11 +1,28 @@
 from __future__ import annotations
 
+from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Tuple
 
 from codeatlas.ctx import build_ctx
 from codeatlas.patch_skel import patch_skeleton
 from codeatlas.py_symbols import list_python_symbols
+
+
+@dataclass(frozen=True)
+class Target:
+    path: str
+    qualname: Optional[str] = None
+
+
+def parse_target(s: str) -> Target:
+    """Parse 'path' or 'path::qualname'."""
+    if "::" in s:
+        p, q = s.split("::", 1)
+        p = p.strip()
+        q = q.strip()
+        return Target(path=p, qualname=(q or None))
+    return Target(path=s.strip(), qualname=None)
 
 
 def build_plan(
@@ -21,18 +38,52 @@ def build_plan(
     run: Optional[List[str]],
     commit: Optional[str],
 ) -> Dict[str, Any]:
+    """Backward-compatible single-target plan."""
+    return build_plan_multi(
+        root=root,
+        targets=[Target(path=path, qualname=qualname)],
+        content=content,
+        head=head,
+        tail=tail,
+        max_bytes=max_bytes,
+        op=op,
+        run=run,
+        commit=commit,
+    )
+
+
+def build_plan_multi(
+    *,
+    root: Path,
+    targets: List[Target],
+    content: bool,
+    head: Optional[int],
+    tail: Optional[int],
+    max_bytes: Optional[int],
+    op: str,
+    run: Optional[List[str]],
+    commit: Optional[str],
+) -> Dict[str, Any]:
     """Build a single JSON bundle intended to be pasted to an LLM.
 
     Includes:
-      - ctx: minimal context bundle (node+meta and optional truncated content)
-      - py_symbols: Python qualnames+spans (if path endswith .py)
-      - patch: BridgeAI packet skeleton
+      - ctx: minimal context bundle for all target paths
+      - py_symbols_by_path: qualnames+spans for each .py path
+      - patches: BridgeAI packet skeleton per target
     """
     root = root.resolve()
 
+    # de-dup paths preserving order
+    seen = set()
+    paths: List[str] = []
+    for t in targets:
+        if t.path not in seen:
+            seen.add(t.path)
+            paths.append(t.path)
+
     ctx = build_ctx(
         root=root,
-        paths=[path],
+        paths=paths,
         ids=[],
         content=content,
         head=head,
@@ -40,27 +91,35 @@ def build_plan(
         max_bytes=max_bytes,
     )
 
-    py_syms = None
-    if path.lower().endswith(".py"):
-        pth = (root / path)
-        if pth.exists():
-            py_syms = list_python_symbols(pth)
+    py_symbols_by_path: Dict[str, Any] = {}
+    for p in paths:
+        if p.lower().endswith(".py"):
+            pp = root / p
+            if pp.exists():
+                py_symbols_by_path[p] = list_python_symbols(pp)
 
-    patch = patch_skeleton(
-        path=path,
-        qualname=qualname,
-        op=op,
-        run=run,
-        commit=commit,
-    )
+    patches: List[Dict[str, Any]] = []
+    for t in targets:
+        # default op choice: if qualname present => replace_symbol else replace_file
+        chosen_op = op
+        if t.qualname is None and chosen_op == "replace_symbol":
+            chosen_op = "replace_file"
+        patches.append(
+            patch_skeleton(
+                path=t.path,
+                qualname=t.qualname,
+                op=chosen_op,
+                run=run,
+                commit=commit,
+            )
+        )
 
     ok = bool(ctx.get("ok"))
     return {
         "ok": ok,
         "root": str(root),
-        "path": path,
-        "qualname": qualname,
+        "targets": [{"path": t.path, "qualname": t.qualname} for t in targets],
         "ctx": ctx,
-        "py_symbols": py_syms,
-        "patch": patch,
+        "py_symbols_by_path": py_symbols_by_path,
+        "patches": patches,
     }

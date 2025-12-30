@@ -36,8 +36,8 @@ def f(x):
 
     assert out["ok"] is True
     assert out["ctx"]["items"][0]["node"]["path"] == "m.py"
-    assert out["py_symbols"] is not None
-    qns = [s["qualname"] for s in out["py_symbols"]]
+    assert "m.py" in out["py_symbols_by_path"]
+    qns = [s["qualname"] for s in out["py_symbols_by_path"]["m.py"]]
     assert "A" in qns and "A.m" in qns and "f" in qns
-    assert out["patch"]["ops"][0]["op"] == "replace_symbol"
-    assert out["patch"]["ops"][0]["qualname"] == "f"
+    assert out["patches"][0]["ops"][0]["op"] == "replace_symbol"
+    assert out["patches"][0]["ops"][0]["qualname"] == "f"
