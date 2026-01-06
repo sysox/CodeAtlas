@@ -8,6 +8,7 @@ from codeatlas.model import Node, make_id
 from codeatlas.scan import scan_files
 from codeatlas.fingerprint import build_fingerprints, diff_fingerprints
 from codeatlas.state import load_json, write_json, write_nodes_jsonl
+from codeatlas.py_symbols import list_python_symbols
 
 
 def _kind_from_path(relpath: str) -> str:
@@ -30,7 +31,10 @@ def _kind_from_path(relpath: str) -> str:
 
 
 def build_or_update(root: Path) -> Dict[str, Any]:
-    """MVP: file-level index. Writes nodes.jsonl + paths.json + fingerprints.json."""
+    """
+    Performs a deep index of the workspace, creating nodes for files and symbols.
+    Writes nodes.jsonl, paths.json, and fingerprints.json.
+    """
     root = root.resolve()
     ap = AtlasPaths(root)
     ap.ensure_dirs()
@@ -46,12 +50,12 @@ def build_or_update(root: Path) -> Dict[str, Any]:
     new_fp: Dict[str, str] = build_fingerprints(root, relpaths)
     diff = diff_fingerprints(old_fp, new_fp)
 
-    nodes: List[Dict[str, Any]] = []
+    all_nodes: List[Dict[str, Any]] = []
     path_index: Dict[str, str] = {}
 
     # root node
     root_id = "root"
-    file_ids: List[str] = []
+    root_children_ids: List[str] = []
 
     for rp in relpaths:
         p = root / rp
@@ -64,9 +68,68 @@ def build_or_update(root: Path) -> Dict[str, Any]:
         except FileNotFoundError:
             continue
 
-        nid = make_id("path", rp)
-        file_ids.append(nid)
-        path_index[rp] = nid
+        file_id = make_id("path", rp)
+        root_children_ids.append(file_id)
+        path_index[rp] = file_id
+        
+        file_children_ids = []
+        
+        # If it's a Python file, perform deep symbol indexing
+        if _kind_from_path(rp) == "py":
+            try:
+                symbols = list_python_symbols(p)
+                
+                # Map qualname -> symbol_id for parent lookup
+                sym_id_map = {}
+                
+                # First pass: Create IDs and Nodes for all symbols
+                for sym in symbols:
+                    qualname = sym["qualname"]
+                    symbol_id = make_id("symbol", rp, qualname)
+                    sym_id_map[qualname] = symbol_id
+                    
+                    symbol_node = Node(
+                        id=symbol_id,
+                        type="block",
+                        path=rp,
+                        anchor=qualname,
+                        summary=None,
+                        children=[], # Will fill in second pass
+                        meta={
+                            "kind": sym["kind"],
+                            "start_line": sym["start_line"],
+                            "end_line": sym["end_line"],
+                        }
+                    )
+                    all_nodes.append(symbol_node.to_dict())
+
+                # Second pass: Link children to parents
+                # We need to find the node objects we just created to update their children list.
+                # Since all_nodes is a list of dicts, let's make a temporary map for easy access.
+                node_map = {n["id"]: n for n in all_nodes if n["path"] == rp and n["type"] == "block"}
+
+                for sym in symbols:
+                    qualname = sym["qualname"]
+                    current_id = sym_id_map[qualname]
+                    
+                    if "." in qualname:
+                        # It's a nested symbol (e.g., Class.method)
+                        parent_qualname = qualname.rsplit(".", 1)[0]
+                        parent_id = sym_id_map.get(parent_qualname)
+                        
+                        if parent_id and parent_id in node_map:
+                            # Add to parent symbol's children
+                            node_map[parent_id]["children"].append(current_id)
+                        else:
+                            # Parent not found (shouldn't happen if symbols are complete), fallback to file
+                            file_children_ids.append(current_id)
+                    else:
+                        # It's a top-level symbol, add to file's children
+                        file_children_ids.append(current_id)
+
+            except Exception:
+                # Ignore files that fail to parse
+                pass
 
         meta = {
             "kind": _kind_from_path(rp),
@@ -74,19 +137,21 @@ def build_or_update(root: Path) -> Dict[str, Any]:
             "sha256": new_fp.get(rp)
         }
 
-        n = Node(id=nid, type="file", path=rp, summary=None, children=[], meta=meta)
-        nodes.append(n.to_dict())
+        file_node = Node(id=file_id, type="file", path=rp, summary=None, children=file_children_ids, meta=meta)
+        all_nodes.append(file_node.to_dict())
 
-    nodes.insert(0, Node(id=root_id, type="project", path=".", summary="workspace root", children=file_ids).to_dict())
+    # Add the project root node at the beginning
+    root_node = Node(id=root_id, type="project", path=".", summary="workspace root", children=root_children_ids)
+    all_nodes.insert(0, root_node.to_dict())
 
-    write_nodes_jsonl(ap.nodes_path, nodes)
+    write_nodes_jsonl(ap.nodes_path, all_nodes)
     write_json(ap.paths_index_path, path_index)
     write_json(ap.fingerprints_path, new_fp)
 
     return {
         "ok": True,
         "files_total": len(relpaths),
-        "files_indexed": len(file_ids),
+        "nodes_indexed": len(all_nodes),
         "diff": diff,
         "atlas_dir": str(ap.atlas_dir)
     }

@@ -1,5 +1,5 @@
 from __future__ import annotations
-
+import json
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Dict, List, Optional
@@ -29,6 +29,7 @@ def parse_target(s: str) -> Target:
 def build_plan(
     *,
     root: Path,
+    goal: str,
     path: str,
     qualname: Optional[str],
     content: bool,
@@ -42,6 +43,7 @@ def build_plan(
     """Backward-compatible single-target plan."""
     return build_plan_multi(
         root=root,
+        goal=goal,
         targets=[Target(path=path, qualname=qualname)],
         content=content,
         head=head,
@@ -56,6 +58,7 @@ def build_plan(
 def build_plan_multi(
     *,
     root: Path,
+    goal: str,
     targets: List[Target],
     content: bool,
     head: Optional[int],
@@ -139,9 +142,38 @@ def build_plan_multi(
     return {
         "ok": ok,
         "root": str(root),
+        "goal": goal,
         "targets": [{"path": t.path, "qualname": t.qualname} for t in targets],
         "ctx": ctx,
         "py_symbols_by_path": py_symbols_by_path,
         "symbol_snippets": symbol_snippets,
         "patches": patches,
     }
+
+def render_prompt_text(bundle: Dict[str, Any]) -> str:
+    """Render the JSON bundle into a text prompt for an LLM."""
+    # Isolate the 'patches' part to use as the skeleton for the response
+    patches_skeleton = bundle.get("patches", [])
+    
+    # Create a copy of the bundle and remove the 'patches' field for the context
+    context_bundle = bundle.copy()
+    context_bundle.pop("patches", None)
+
+    prompt = f"""
+You are an expert software developer. Your task is to complete the JSON object below to modify a codebase.
+
+The user's goal is: "{bundle.get('goal', 'Not specified')}"
+
+The relevant context from the codebase is provided in the following JSON object. It includes file content, symbol locations, and other metadata.
+
+```json
+{json.dumps(context_bundle, indent=2)}
+```
+
+Based on the user's goal and the provided context, complete the following JSON "change packet" skeleton. Fill in the `<PASTE_..._HERE>` placeholders with the exact code or content required. Do not modify the structure of the skeleton.
+
+```json
+{json.dumps(patches_skeleton, indent=2)}
+```
+"""
+    return prompt.strip()

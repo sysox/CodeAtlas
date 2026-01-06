@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 import json
 from pathlib import Path
+import time
 
 from codeatlas.store_init import init_workspace
 from codeatlas.index import build_or_update
@@ -11,9 +12,14 @@ from codeatlas.ctx import build_ctx
 from codeatlas.py_symbols import list_python_symbols
 from codeatlas.py_extract import extract_qualname_source
 from codeatlas.patch_skel import patch_skeleton
-from codeatlas.plan import build_plan, build_plan_multi, parse_target
+from codeatlas.plan import build_plan, build_plan_multi, parse_target, render_prompt_text
 from codeatlas.diff import compute_diff
 from codeatlas.grep import grep_snippets
+from codeatlas.layout import AtlasPaths
+from codeatlas.apply import apply_change_packet
+from codeatlas.llm import call_llm_api
+from codeatlas.state import load_json
+from codeatlas.summarize import summarize_symbols, update_spec_with_summaries
 
 
 def main(argv=None) -> int:
@@ -77,9 +83,12 @@ def main(argv=None) -> int:
 
     sp_plan = sub.add_parser("plan", help="One-shot bundle: ctx + py-symbols + patch skeleton")
     sp_plan.add_argument("--root", default=".", help="Workspace root")
+    sp_plan.add_argument("--goal", required=True, help="The user's goal for the change")
     sp_plan.add_argument("--target", action="append", default=[], help="Target: path or path::qualname (repeatable)")
     sp_plan.add_argument("--path", default=None, help="Target relative path (legacy)")
     sp_plan.add_argument("--qualname", default=None, help="Python qualname for replace_symbol (legacy)")
+    sp_plan.add_argument("--with-llm", action="store_true", help="Call LLM API directly")
+    sp_plan.add_argument("--apply", action="store_true", help="Apply the change packet automatically (requires --with-llm)")
 
     sp_plan.add_argument("--op", default="replace_symbol", choices=["replace_symbol", "replace_file"], help="Skeleton op")
     sp_plan.add_argument("--content", action="store_true", help="Include content text")
@@ -88,6 +97,19 @@ def main(argv=None) -> int:
     sp_plan.add_argument("--max-bytes", type=int, default=None, help="Cap content bytes (UTF-8); truncates if needed")
     sp_plan.add_argument("--run", action="append", default=None, help="Command to run after apply (repeatable)")
     sp_plan.add_argument("--commit", default=None, help="Commit message placeholder")
+
+    sp_apply = sub.add_parser("apply", help="Apply a change packet to the workspace")
+    sp_apply.add_argument("--root", default=".", help="Workspace root")
+    sp_apply.add_argument("packet_path", help="Path to the change packet JSON file")
+
+    sp_summ = sub.add_parser("summarize", help="Generate summaries for symbols")
+    sp_summ.add_argument("--root", default=".", help="Workspace root")
+    sp_summ.add_argument("--path", action="append", default=[], help="Specific paths to summarize (optional)")
+    sp_summ.add_argument("--with-llm", action="store_true", help="Call LLM API to generate summaries")
+
+    sp_spec_up = sub.add_parser("spec-update", help="Update CodeAtlas.json with generated summaries")
+    sp_spec_up.add_argument("--root", default=".", help="Workspace root")
+
 
     args = p.parse_args(argv)
     root = Path(getattr(args, "root", ".")).resolve()
@@ -195,11 +217,20 @@ def main(argv=None) -> int:
         return 0
 
     if args.cmd == "plan":
+        if args.apply and not args.with_llm:
+            print("Error: --apply can only be used with --with-llm.")
+            return 1
+
+        ap = AtlasPaths(root)
+        run_dir = ap.log_dir / f"run_{time.strftime('%Y%m%d_%H%M%S')}"
+        run_dir.mkdir(parents=True, exist_ok=True)
+
         init_workspace(root)
         if args.target:
             targets = [parse_target(t) for t in args.target]
-            out = build_plan_multi(
+            bundle = build_plan_multi(
                 root=root,
+                goal=args.goal,
                 targets=targets,
                 content=bool(args.content),
                 head=args.head,
@@ -213,8 +244,9 @@ def main(argv=None) -> int:
             if not args.path:
                 print(json.dumps({"ok": False, "error": "provide --target or --path"}, indent=2))
                 return 2
-            out = build_plan(
+            bundle = build_plan(
                 root=root,
+                goal=args.goal,
                 path=args.path,
                 qualname=args.qualname,
                 content=bool(args.content),
@@ -225,7 +257,60 @@ def main(argv=None) -> int:
                 run=args.run,
                 commit=args.commit
             )
-        print(json.dumps(out, ensure_ascii=False, indent=2))
-        return 0 if out.get("ok") else 2
+        
+        bundle_path = run_dir / "bundle.json"
+        bundle_path.write_text(json.dumps(bundle, ensure_ascii=False, indent=2), encoding="utf-8")
+
+        prompt_text = render_prompt_text(bundle)
+        prompt_path = run_dir / "prompt.txt"
+        prompt_path.write_text(prompt_text, encoding="utf-8")
+
+        response_path = run_dir / "response.json"
+
+        if args.with_llm:
+            print("Calling LLM API...")
+            llm_cfg_path = ap.atlas_dir / "llm_cfg.json"
+            llm_cfg = load_json(llm_cfg_path, default={})
+            result = call_llm_api(prompt_text, llm_cfg)
+            
+            if not result.get("ok"):
+                print(json.dumps(result, ensure_ascii=False, indent=2))
+                return 1
+
+            response_path.write_text(json.dumps(result["response"], ensure_ascii=False, indent=2), encoding="utf-8")
+            print(f"LLM response saved to:\n  {response_path}")
+
+            if args.apply:
+                print("\nApplying change packet...")
+                report = apply_change_packet(root, response_path)
+                print(json.dumps(report, ensure_ascii=False, indent=2))
+                return 0 if report.get("ok") else 1
+
+        else:
+            print(f"Plan generated successfully.")
+            print(f"To get the code modification, copy the full content of:\n  {prompt_path}")
+            print(f"and paste it into your LLM. Then save the JSON response to:\n  {response_path}")
+            print(f"\nOnce the response is saved, apply it by running:\n  atlas apply {response_path}")
+
+
+        return 0 if bundle.get("ok") else 2
+    
+    if args.cmd == "apply":
+        packet_path = Path(args.packet_path)
+        report = apply_change_packet(root, packet_path)
+        print(json.dumps(report, ensure_ascii=False, indent=2))
+        return 0 if report.get("ok") else 1
+
+    if args.cmd == "summarize":
+        init_workspace(root)
+        res = summarize_symbols(root, paths=args.path, with_llm=args.with_llm)
+        print(json.dumps(res, ensure_ascii=False, indent=2))
+        return 0 if res.get("ok") else 1
+
+    if args.cmd == "spec-update":
+        init_workspace(root)
+        res = update_spec_with_summaries(root)
+        print(json.dumps(res, ensure_ascii=False, indent=2))
+        return 0 if res.get("ok") else 1
 
     return 0

@@ -21,6 +21,13 @@ DEFAULT_CFG: Dict[str, Any] = {
     "max_file_bytes": 2_000_000
 }
 
+DEFAULT_LLM_CFG: Dict[str, Any] = {
+    "provider": "openai",
+    "model": "gpt-4-turbo-preview",
+    "api_key_env_var": "OPENAI_API_KEY",
+    "endpoint_url": "https://api.openai.com/v1/chat/completions"
+}
+
 
 def init_workspace(root: Path) -> AtlasPaths:
     """Create .atlas layout and default cfg.json if missing."""
@@ -30,6 +37,10 @@ def init_workspace(root: Path) -> AtlasPaths:
 
     if not ap.cfg_path.exists():
         ap.cfg_path.write_text(json.dumps(DEFAULT_CFG, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+
+    llm_cfg_path = ap.atlas_dir / "llm_cfg.json"
+    if not llm_cfg_path.exists():
+        llm_cfg_path.write_text(json.dumps(DEFAULT_LLM_CFG, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
     if not ap.nodes_path.exists():
         ap.nodes_path.write_text("", encoding="utf-8")
