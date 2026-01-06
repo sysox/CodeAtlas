@@ -4,10 +4,11 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-from codeatlas.ctx import build_ctx
 from codeatlas.patch_skel import patch_skeleton
 from codeatlas.py_symbols import list_python_symbols
 from codeatlas.py_extract import extract_qualname_source
+from codeatlas.compression import build_machine_core
+from codeatlas.resolve import lookup_path
 
 
 @dataclass(frozen=True)
@@ -71,30 +72,35 @@ def build_plan_multi(
     """Build a single JSON bundle intended to be pasted to an LLM.
 
     Includes:
-      - ctx: minimal context bundle for all target paths
+      - machine_core: compressed structural representation of the project, 
+                      with target nodes expanded into inline text.
       - py_symbols_by_path: qualnames+spans for each .py path
       - symbol_snippets: exact source text for any target with qualname (token saver)
       - patches: BridgeAI packet skeleton per target
     """
     root = root.resolve()
 
-    # de-dup paths preserving order
-    seen = set()
+    # Resolve target paths to node IDs for expansion
+    expand_ids = []
     paths: List[str] = []
+    seen = set()
+    
     for t in targets:
         if t.path not in seen:
             seen.add(t.path)
             paths.append(t.path)
+            
+        # Lookup node ID for the file
+        nid = lookup_path(root, t.path)
+        if nid:
+            expand_ids.append(nid)
+            # Note: Ideally we would also expand specific symbol IDs if t.qualname is set,
+            # but our current lookup_path only handles files. 
+            # Since we expand the whole file, the symbol is included.
 
-    ctx = build_ctx(
-        root=root,
-        paths=paths,
-        ids=[],
-        content=content,
-        head=head,
-        tail=tail,
-        max_bytes=max_bytes,
-    )
+    # Build Machine Core with selective expansion
+    # This creates the Hybrid View: mostly pointers, but text for targets.
+    machine_core = build_machine_core(root, expand_ids=expand_ids if content else None)
 
     py_symbols_by_path: Dict[str, Any] = {}
     for p in paths:
@@ -138,13 +144,12 @@ def build_plan_multi(
             )
         )
 
-    ok = bool(ctx.get("ok"))
     return {
-        "ok": ok,
+        "ok": True,
         "root": str(root),
         "goal": goal,
         "targets": [{"path": t.path, "qualname": t.qualname} for t in targets],
-        "ctx": ctx,
+        "machine_core": machine_core,
         "py_symbols_by_path": py_symbols_by_path,
         "symbol_snippets": symbol_snippets,
         "patches": patches,
@@ -152,25 +157,32 @@ def build_plan_multi(
 
 def render_prompt_text(bundle: Dict[str, Any]) -> str:
     """Render the JSON bundle into a text prompt for an LLM."""
-    # Isolate the 'patches' part to use as the skeleton for the response
     patches_skeleton = bundle.get("patches", [])
-    
-    # Create a copy of the bundle and remove the 'patches' field for the context
-    context_bundle = bundle.copy()
-    context_bundle.pop("patches", None)
+    machine_core = bundle.get("machine_core", {})
+    goal = bundle.get("goal", "Not specified")
 
     prompt = f"""
 You are an expert software developer. Your task is to complete the JSON object below to modify a codebase.
 
-The user's goal is: "{bundle.get('goal', 'Not specified')}"
+The user's goal is: "{goal}"
 
-The relevant context from the codebase is provided in the following JSON object. It includes file content, symbol locations, and other metadata.
+### Project Context (Machine Core)
+The following JSON object is the "Machine Core" of the project. It is a tree structure where:
+- `t`: type (f=file, d=dir, b=block)
+- `d`: data/content
+    - `t`: content type (`ptr`=pointer to file, `txt`=inline text, `sum`=summary)
+    - `v`: the actual text content (if `t`=`txt`)
+
+Relevant files have been expanded into `txt` format within this tree. Use this context to understand the code and plan your changes.
 
 ```json
-{json.dumps(context_bundle, indent=2)}
+{json.dumps(machine_core, indent=None, separators=(',', ':'))}
 ```
 
-Based on the user's goal and the provided context, complete the following JSON "change packet" skeleton. Fill in the `<PASTE_..._HERE>` placeholders with the exact code or content required. Do not modify the structure of the skeleton.
+### Task
+Based on the user's goal and the provided context, complete the following JSON "change packet" skeleton. 
+Fill in the `<PASTE_..._HERE>` placeholders with the exact code or content required. 
+Do not modify the structure of the skeleton.
 
 ```json
 {json.dumps(patches_skeleton, indent=2)}

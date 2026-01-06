@@ -20,3 +20,8 @@ This file tracks the immediate next tasks for the project.
 - [x] Create `atlas summarize` command to generate prompts for summarizing symbols.
 - [x] Implement `--with-llm` for `atlas summarize` to automate summary generation.
 - [x] Create `atlas spec-update` command to inject summaries into `CodeAtlas.json`.
+
+## Phase 4 (Complete)
+
+- [x] Update `src/codeatlas/compression.py` to implement the Generic "Code Tree" model (Pointer/Text/Summary).
+- [x] Update `src/codeatlas/plan.py` to use the new generic core structure in prompts.

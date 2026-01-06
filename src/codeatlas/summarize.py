@@ -75,12 +75,12 @@ def summarize_symbols(
         
         for sym in symbols:
             qualname = sym["qualname"]
-            
+
             # Extract source code
             extract_res = extract_qualname_source(full_path, qualname)
             if not extract_res.get("ok"):
                 continue
-            
+
             code_text = extract_res["text"]
             prompt = generate_summary_prompt(qualname, code_text)
             
@@ -93,7 +93,7 @@ def summarize_symbols(
                 if llm_res.get("ok"):
                     response_data = llm_res["response"]
                     summary_text = response_data.get("summary", "")
-                    
+
                     # Save the summary
                     out_file = summaries_dir / f"{safe_name}.json"
                     out_data = {
@@ -129,7 +129,7 @@ def update_spec_with_summaries(root: Path) -> Dict[str, Any]:
     codeatlas_json_path = root / "CodeAtlas.json"
     if not codeatlas_json_path.exists():
         return {"ok": False, "error": "CodeAtlas.json not found."}
-        
+
     try:
         spec = json.loads(codeatlas_json_path.read_text(encoding="utf-8"))
     except json.JSONDecodeError:
@@ -147,13 +147,13 @@ def update_spec_with_summaries(root: Path) -> Dict[str, Any]:
             continue
 
     updated_count = 0
-    
+
     # Iterate through nodes in spec and update summaries
     # Note: CodeAtlas.json currently only has file-level nodes and "blocks" which are manually defined.
     # To fully support this, we need to map the "qualname" from the summary to the "id" or "anchor" in the spec.
     # The current spec uses IDs like "B_cli_main" and anchors like "main".
     # We will try to match by file path and anchor/qualname.
-    
+
     nodes = spec.get("nodes", [])
     for node in nodes:
         if node.get("type") == "block":
@@ -161,10 +161,10 @@ def update_spec_with_summaries(root: Path) -> Dict[str, Any]:
             # We need to find the file this block belongs to.
             # In the current spec, the "path" field is present on the block node itself!
             # e.g. "path": "src/codeatlas/cli.py", "anchor": "main"
-            
+
             path = node.get("path")
             anchor = node.get("anchor")
-            
+
             if path and anchor:
                 # Try to find a summary for this path and anchor (qualname)
                 summary = summary_map.get((path, anchor))
