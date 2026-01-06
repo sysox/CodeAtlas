@@ -420,7 +420,7 @@
       "type": "file",
       "path": "src/codeatlas/apply.py",
       "summary": "Applies change packets to the workspace.",
-      "children": ["B_apply_change_packet"],
+      "children": ["B_apply_change_packet", "B_run_command"],
       "ext": {}
     },
     {
@@ -429,6 +429,15 @@
       "path": "src/codeatlas/apply.py",
       "anchor": "apply_change_packet",
       "summary": "Validates and executes the operations in a change packet.",
+      "children": [],
+      "ext": {}
+    },
+    {
+      "id": "B_run_command",
+      "type": "block",
+      "path": "src/codeatlas/apply.py",
+      "anchor": "run_command",
+      "summary": "Executes a shell command and captures output.",
       "children": [],
       "ext": {}
     },
