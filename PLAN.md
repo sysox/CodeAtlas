@@ -14,15 +14,15 @@ This phase made the process smoother for users by adding optional, direct integr
 
 This phase made the system self-describing by creating tools to automatically generate and inject summaries into the project's specification.
 
-## Phase 4: Implement the Generic "Code Tree" Model
+## Phase 4: Implement the Generic "Code Tree" Model (Complete)
 
-This phase will refactor the "Machine Core" to be a truly generic and flexible representation of the codebase, optimizing it for advanced AI interaction.
+This phase refactored the "Machine Core" to be a truly generic and flexible representation of the codebase, optimizing it for advanced AI interaction.
 
-1.  **Define Generic Node Content:** Evolve the Machine Core format so that any node can represent its content in multiple ways:
-    *   **Pointer:** A reference to a file on disk (`{ "type": "pointer", "path": "..." }`).
-    *   **Inline Text:** The actual source code contained directly within the node (`{ "type": "text", "content": "..." }`).
-    *   **Summary:** A natural language description (`{ "type": "summary", "text": "..." }`).
+## Phase 5: Prompt & Core Refinement
 
-2.  **Create a "View Layer":** Update `compression.py` to act as a "View Layer". It will read the current pointer-based storage (`nodes.jsonl`) and transform it into this new, generic "Code Tree" format for the LLM. This gives us the benefits of the new model without a disruptive storage-layer refactor.
+This phase will simplify the data bundle sent to the LLM by removing redundant information, making the Machine Core the single source of truth for context.
 
-3.  **Integrate the New Core:** Update the `plan.py` module to understand and render this new, richer Machine Core structure within the LLM prompt, ensuring the AI can leverage the flexible content types.
+1.  **Enhance Machine Core:** Update `compression.py` to include metadata (like line numbers) for symbol nodes directly within the compressed output.
+2.  **Refactor Plan Bundle:** Remove the now-redundant `py_symbols_by_path` and `symbol_snippets` sections from the output of the `atlas plan` command.
+3.  **Simplify Prompt:** Update the prompt generation logic in `plan.py` to rely exclusively on the unified Machine Core for all structural and content context.
+4.  **Update Tests:** Adjust tests to align with the new, leaner plan bundle structure.

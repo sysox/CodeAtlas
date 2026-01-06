@@ -25,3 +25,9 @@ This file tracks the immediate next tasks for the project.
 
 - [x] Update `src/codeatlas/compression.py` to implement the Generic "Code Tree" model (Pointer/Text/Summary).
 - [x] Update `src/codeatlas/plan.py` to use the new generic core structure in prompts.
+
+## Phase 5 (Complete)
+
+- [x] Enhance `compression.py` to include symbol metadata in the Machine Core.
+- [x] Refactor `plan.py` to remove redundant symbol information from the plan bundle.
+- [x] Update tests to reflect the new leaner bundle structure.

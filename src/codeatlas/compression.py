@@ -17,11 +17,13 @@ def compress_node(node: Dict[str, Any], root: Optional[Path] = None, expand_cont
       "i": "id",
       "t": "type" (f=file, d=dir, b=block),
       "c": ["child_id", ...],
+      "s": "summary",
+      "m": { ...metadata... },
       "d": {  // Data / Content
-        "t": "ptr" | "txt" | "sum", // Type of content
+        "t": "ptr" | "txt", // Type of content
         "p": "path",      // for ptr
         "a": "anchor",    // for ptr
-        "v": "value"      // for txt or sum
+        "v": "value"      // for txt
       }
     }
     """
@@ -46,8 +48,17 @@ def compress_node(node: Dict[str, Any], root: Optional[Path] = None, expand_cont
     if children:
         out["c"] = children
 
+    # Summary
+    summary = node.get("summary")
+    if summary:
+        out["s"] = summary
+
+    # Metadata (for blocks)
+    meta = node.get("meta")
+    if meta:
+        out["m"] = meta
+
     # Content Data ("d")
-    # By default, we create a Pointer ("ptr")
     data = {
         "t": "ptr",
         "p": node.get("path")
@@ -57,20 +68,11 @@ def compress_node(node: Dict[str, Any], root: Optional[Path] = None, expand_cont
     if anchor:
         data["a"] = anchor
         
-    # If we have a summary, we can include it as metadata or potentially as the primary content type
-    # For now, let's keep summary as a separate field 's' for quick scanning, 
-    # but the 'd' field represents the "body" of the node.
-    summary = node.get("summary")
-    if summary:
-        out["s"] = summary
-
     # Expansion Logic (Hybrid Model)
-    # If expand_content is True, we resolve the pointer and become "txt"
     if expand_content and root and node.get("path"):
         try:
-            # This is a simplification. Real expansion needs to handle anchors (slicing).
-            # For now, we only expand files or blocks if we can resolve them.
-            # resolve_content currently only handles files.
+            # We need a more robust resolve_content that can handle anchors for blocks
+            # For now, we assume resolve_content can handle file IDs and we expand the whole file
             if ntype == "file":
                 content = resolve_content(root, node["id"])
                 data = {
@@ -78,7 +80,6 @@ def compress_node(node: Dict[str, Any], root: Optional[Path] = None, expand_cont
                     "v": content
                 }
         except Exception:
-            # Fallback to pointer if resolution fails
             pass
 
     out["d"] = data
