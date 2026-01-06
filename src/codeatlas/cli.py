@@ -20,6 +20,8 @@ from codeatlas.apply import apply_change_packet
 from codeatlas.llm import call_llm_api
 from codeatlas.state import load_json
 from codeatlas.summarize import summarize_symbols, update_spec_with_summaries
+from codeatlas.compression import build_machine_core
+from codeatlas.proposal import build_proposal_packet
 
 
 def main(argv=None) -> int:
@@ -109,6 +111,13 @@ def main(argv=None) -> int:
 
     sp_spec_up = sub.add_parser("spec-update", help="Update CodeAtlas.json with generated summaries")
     sp_spec_up.add_argument("--root", default=".", help="Workspace root")
+
+    sp_export = sub.add_parser("export-core", help="Export the compressed Machine Core")
+    sp_export.add_argument("--root", default=".", help="Workspace root")
+
+    sp_pkg = sub.add_parser("package-proposal", help="Create a proposal packet for review")
+    sp_pkg.add_argument("--bundle", required=True, help="Path to the original bundle.json")
+    sp_pkg.add_argument("--packet", required=True, help="Path to the change packet.json")
 
 
     args = p.parse_args(argv)
@@ -310,6 +319,17 @@ def main(argv=None) -> int:
     if args.cmd == "spec-update":
         init_workspace(root)
         res = update_spec_with_summaries(root)
+        print(json.dumps(res, ensure_ascii=False, indent=2))
+        return 0 if res.get("ok") else 1
+
+    if args.cmd == "export-core":
+        init_workspace(root)
+        core = build_machine_core(root)
+        print(json.dumps(core, indent=None, separators=(',', ':')))
+        return 0
+
+    if args.cmd == "package-proposal":
+        res = build_proposal_packet(Path(args.bundle), Path(args.packet))
         print(json.dumps(res, ensure_ascii=False, indent=2))
         return 0 if res.get("ok") else 1
 

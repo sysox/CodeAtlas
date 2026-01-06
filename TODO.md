@@ -31,3 +31,8 @@ This file tracks the immediate next tasks for the project.
 - [x] Enhance `compression.py` to include symbol metadata in the Machine Core.
 - [x] Refactor `plan.py` to remove redundant symbol information from the plan bundle.
 - [x] Update tests to reflect the new leaner bundle structure.
+
+## Phase 6 (Complete)
+
+- [x] Create `src/codeatlas/proposal.py` to implement the logic for building the `proposal.json`.
+- [x] Implement `atlas package-proposal` command in `cli.py`.

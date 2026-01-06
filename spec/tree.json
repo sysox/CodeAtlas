@@ -34,6 +34,7 @@
         "F_apply",
         "F_summarize",
         "F_compression",
+        "F_proposal",
         "F_tests"
       ],
       "ext": {}
@@ -491,6 +492,24 @@
       "path": "src/codeatlas/compression.py",
       "anchor": "build_machine_core",
       "summary": "Generates the compressed 'Machine Core' representation of the project.",
+      "children": [],
+      "ext": {}
+    },
+
+    {
+      "id": "F_proposal",
+      "type": "file",
+      "path": "src/codeatlas/proposal.py",
+      "summary": "Builds proposal packets for multi-agent review.",
+      "children": ["B_build_proposal_packet"],
+      "ext": {}
+    },
+    {
+      "id": "B_build_proposal_packet",
+      "type": "block",
+      "path": "src/codeatlas/proposal.py",
+      "anchor": "build_proposal_packet",
+      "summary": "Combines original bundle and change packet into a reviewable proposal.",
       "children": [],
       "ext": {}
     },

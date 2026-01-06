@@ -18,11 +18,14 @@ This phase made the system self-describing by creating tools to automatically ge
 
 This phase refactored the "Machine Core" to be a truly generic and flexible representation of the codebase, optimizing it for advanced AI interaction.
 
-## Phase 5: Prompt & Core Refinement
+## Phase 5: Prompt & Core Refinement (Complete)
 
-This phase will simplify the data bundle sent to the LLM by removing redundant information, making the Machine Core the single source of truth for context.
+This phase simplified the data bundle sent to the LLM by removing redundant information, making the Machine Core the single source of truth for context.
 
-1.  **Enhance Machine Core:** Update `compression.py` to include metadata (like line numbers) for symbol nodes directly within the compressed output.
-2.  **Refactor Plan Bundle:** Remove the now-redundant `py_symbols_by_path` and `symbol_snippets` sections from the output of the `atlas plan` command.
-3.  **Simplify Prompt:** Update the prompt generation logic in `plan.py` to rely exclusively on the unified Machine Core for all structural and content context.
-4.  **Update Tests:** Adjust tests to align with the new, leaner plan bundle structure.
+## Phase 6: Multi-Agent Collaboration & Review
+
+This phase introduces a standardized data format and workflow for having one AI agent review the work of another.
+
+1.  **Define "Change Proposal Packet":** Create a new, self-contained JSON format (`proposal.json`) that includes the user's goal, the "before" code snippet, and the "after" code snippet. This packet is the unit of exchange for reviews.
+2.  **Implement `atlas package-proposal` Command:** Create a new CLI command that takes the original context bundle and the first AI's change packet, and packages them into the standardized `proposal.json` for review.
+3.  **Establish Review Workflow:** Document the end-to-end process for multi-agent collaboration, enabling efficient and flexible reviews.
