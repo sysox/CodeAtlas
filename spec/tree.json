@@ -33,6 +33,7 @@
         "F_py_symbols",
         "F_apply",
         "F_summarize",
+        "F_compression",
         "F_tests"
       ],
       "ext": {}
@@ -412,6 +413,7 @@
       "children": [],
       "ext": {}
     },
+
     {
       "id": "F_apply",
       "type": "file",
@@ -429,6 +431,7 @@
       "children": [],
       "ext": {}
     },
+
     {
       "id": "F_summarize",
       "type": "file",
@@ -466,11 +469,38 @@
     },
 
     {
+      "id": "F_compression",
+      "type": "file",
+      "path": "src/codeatlas/compression.py",
+      "summary": "Generates a compressed 'Machine Core' representation of the project.",
+      "children": ["B_compress_node", "B_build_machine_core"],
+      "ext": {}
+    },
+    {
+      "id": "B_compress_node",
+      "type": "block",
+      "path": "src/codeatlas/compression.py",
+      "anchor": "compress_node",
+      "summary": "Compresses a single node into a token-efficient format.",
+      "children": [],
+      "ext": {}
+    },
+    {
+      "id": "B_build_machine_core",
+      "type": "block",
+      "path": "src/codeatlas/compression.py",
+      "anchor": "build_machine_core",
+      "summary": "Generates the compressed 'Machine Core' representation of the project.",
+      "children": [],
+      "ext": {}
+    },
+
+    {
       "id": "F_tests",
       "type": "file_group",
       "path": "tests/",
       "summary": "Tests for init/index/resolve; deterministic fixtures.",
-      "children": ["T_smoke", "T_init", "T_index_basic", "T_resolve", "T_ctx", "T_diff", "T_grep", "T_plan", "T_plan_multi", "T_patch_skel", "T_py_extract", "T_py_symbols"],
+      "children": ["T_smoke", "T_init", "T_index_basic", "T_resolve", "T_ctx", "T_diff", "T_grep", "T_plan", "T_plan_multi", "T_patch_skel", "T_py_extract", "T_py_symbols", "T_apply"],
       "ext": {}
     },
     {
@@ -566,6 +596,14 @@
       "type": "file",
       "path": "tests/test_py_symbols.py",
       "summary": "Tests for python symbol listing.",
+      "children": [],
+      "ext": {}
+    },
+    {
+      "id": "T_apply",
+      "type": "file",
+      "path": "tests/test_apply.py",
+      "summary": "Tests for applying change packets.",
       "children": [],
       "ext": {}
     }
