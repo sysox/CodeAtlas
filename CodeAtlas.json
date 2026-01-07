@@ -530,7 +530,7 @@
       "type": "file",
       "path": "src/codeatlas/humanize.py",
       "summary": "Generates human-readable reports from machine data.",
-      "children": ["B_render_proposal_yaml"],
+      "children": ["B_render_proposal_yaml", "B_render_project_cheatsheet"],
       "ext": {}
     },
     {
@@ -542,6 +542,16 @@
       "children": [],
       "ext": {}
     },
+    {
+      "id": "B_render_project_cheatsheet",
+      "type": "block",
+      "path": "src/codeatlas/humanize.py",
+      "anchor": "render_project_cheatsheet",
+      "summary": "Creates a YAML cheatsheet of the project structure.",
+      "children": [],
+      "ext": {}
+    },
+
     {
       "id": "F_analysis",
       "type": "file",
