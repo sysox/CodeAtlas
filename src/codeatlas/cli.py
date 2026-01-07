@@ -12,7 +12,7 @@ from codeatlas.ctx import build_ctx
 from codeatlas.py_symbols import list_python_symbols
 from codeatlas.py_extract import extract_qualname_source
 from codeatlas.patch_skel import patch_skeleton
-from codeatlas.plan import build_plan, build_plan_multi, parse_target, render_prompt_text
+from codeatlas.plan import build_plan_multi, parse_target, render_prompt_text
 from codeatlas.diff import compute_diff
 from codeatlas.grep import grep_snippets
 from codeatlas.layout import AtlasPaths
@@ -22,6 +22,7 @@ from codeatlas.state import load_json
 from codeatlas.summarize import summarize_symbols, update_spec_with_summaries
 from codeatlas.compression import build_machine_core
 from codeatlas.proposal import build_proposal_packet
+from codeatlas.humanize import render_proposal_yaml
 
 
 def main(argv=None) -> int:
@@ -235,37 +236,24 @@ def main(argv=None) -> int:
         run_dir.mkdir(parents=True, exist_ok=True)
 
         init_workspace(root)
-        if args.target:
-            targets = [parse_target(t) for t in args.target]
-            bundle = build_plan_multi(
-                root=root,
-                goal=args.goal,
-                targets=targets,
-                content=bool(args.content),
-                head=args.head,
-                tail=args.tail,
-                max_bytes=args.max_bytes,
-                op=args.op,
-                run=args.run,
-                commit=args.commit
-            )
-        else:
-            if not args.path:
-                print(json.dumps({"ok": False, "error": "provide --target or --path"}, indent=2))
-                return 2
-            bundle = build_plan(
-                root=root,
-                goal=args.goal,
-                path=args.path,
-                qualname=args.qualname,
-                content=bool(args.content),
-                head=args.head,
-                tail=args.tail,
-                max_bytes=args.max_bytes,
-                op=args.op,
-                run=args.run,
-                commit=args.commit
-            )
+        
+        targets = [parse_target(t) for t in args.target] if args.target else []
+        if not targets and args.path:
+            targets.append(Target(args.path, args.qualname))
+        
+        if not targets:
+            print("Error: No targets specified. Use --target or --path.")
+            return 2
+
+        bundle = build_plan_multi(
+            root=root,
+            goal=args.goal,
+            targets=targets,
+            content=bool(args.content),
+            op=args.op,
+            run=args.run,
+            commit=args.commit,
+        )
         
         bundle_path = run_dir / "bundle.json"
         bundle_path.write_text(json.dumps(bundle, ensure_ascii=False, indent=2), encoding="utf-8")
@@ -329,8 +317,28 @@ def main(argv=None) -> int:
         return 0
 
     if args.cmd == "package-proposal":
-        res = build_proposal_packet(Path(args.bundle), Path(args.packet))
-        print(json.dumps(res, ensure_ascii=False, indent=2))
-        return 0 if res.get("ok") else 1
+        bundle_path = Path(args.bundle)
+        packet_path = Path(args.packet)
+        
+        res = build_proposal_packet(bundle_path, packet_path)
+        
+        if not res.get("ok"):
+            print(json.dumps(res, ensure_ascii=False, indent=2))
+            return 1
+            
+        # Save the machine-readable proposal
+        proposal_json_path = bundle_path.parent / "proposal.json"
+        proposal_json_path.write_text(json.dumps(res, ensure_ascii=False, indent=2), encoding="utf-8")
+
+        # Save the human-readable proposal
+        yaml_report = render_proposal_yaml(res)
+        proposal_yaml_path = bundle_path.parent / "proposal.yaml"
+        proposal_yaml_path.write_text(yaml_report, encoding="utf-8")
+        
+        print(f"Proposal packaged successfully.")
+        print(f"  - Machine-readable: {proposal_json_path}")
+        print(f"  - Human-readable review file: {proposal_yaml_path}")
+        
+        return 0
 
     return 0

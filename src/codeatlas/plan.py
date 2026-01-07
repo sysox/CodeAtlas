@@ -2,12 +2,13 @@ from __future__ import annotations
 import json
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Set
 
 from codeatlas.patch_skel import patch_skeleton
 from codeatlas.compression import build_machine_core
 from codeatlas.resolve import lookup_path
-
+from codeatlas.analysis import find_usages_with_grep
+from codeatlas.model import make_id
 
 @dataclass(frozen=True)
 class Target:
@@ -25,74 +26,58 @@ def parse_target(s: str) -> Target:
     return Target(path=s.strip(), qualname=None)
 
 
-def build_plan(
-    *,
-    root: Path,
-    goal: str,
-    path: str,
-    qualname: Optional[str],
-    content: bool,
-    head: Optional[int],
-    tail: Optional[int],
-    max_bytes: Optional[int],
-    op: str,
-    run: Optional[List[str]],
-    commit: Optional[str],
-) -> Dict[str, Any]:
-    """Backward-compatible single-target plan."""
-    return build_plan_multi(
-        root=root,
-        goal=goal,
-        targets=[Target(path=path, qualname=qualname)],
-        content=content,
-        head=head,
-        tail=tail,
-        max_bytes=max_bytes,
-        op=op,
-        run=run,
-        commit=commit,
-    )
-
-
 def build_plan_multi(
     *,
     root: Path,
     goal: str,
     targets: List[Target],
-    content: bool,
-    head: Optional[int],
-    tail: Optional[int],
-    max_bytes: Optional[int],
+    content: bool, # 'content' now means "expand context intelligently"
     op: str,
     run: Optional[List[str]],
     commit: Optional[str],
+    # Deprecated args, kept for compatibility but ignored
+    head: Optional[int] = None,
+    tail: Optional[int] = None,
+    max_bytes: Optional[int] = None,
 ) -> Dict[str, Any]:
-    """Build a single JSON bundle intended to be pasted to an LLM.
-
-    Includes:
-      - machine_core: compressed structural representation of the project, 
-                      with target nodes expanded into inline text.
-      - patches: BridgeAI packet skeleton per target
+    """
+    Builds an intelligent context bundle for an LLM.
     """
     root = root.resolve()
 
-    # Resolve target paths to node IDs for expansion
-    expand_ids = []
-    seen = set()
-    
-    for t in targets:
-        if t.path not in seen:
-            seen.add(t.path)
-            
-        # Lookup node ID for the file
-        nid = lookup_path(root, t.path)
-        if nid:
-            expand_ids.append(nid)
+    # Set of node IDs to expand into full text content
+    expand_ids: Set[str] = set()
 
-    # Build Machine Core with selective expansion
-    # This creates the Hybrid View: mostly pointers, but text for targets.
-    machine_core = build_machine_core(root, expand_ids=expand_ids if content else None)
+    if content:
+        for t in targets:
+            # Always expand the primary target file
+            target_file_nid = lookup_path(root, t.path)
+            if target_file_nid:
+                expand_ids.add(target_file_nid)
 
+            # If the target is a symbol, find its usages and expand them too
+            if t.qualname:
+                # The symbol itself needs to be identified for expansion
+                symbol_nid = make_id("symbol", t.path, t.qualname)
+                expand_ids.add(symbol_nid)
+
+                # Find usages of the symbol's name
+                symbol_name = t.qualname.split('.')[-1]
+                usages = find_usages_with_grep(root, symbol_name)
+                
+                for usage in usages:
+                    # Find the node ID of the file where the usage occurred
+                    usage_file_nid = lookup_path(root, usage["path"])
+                    if usage_file_nid:
+                        expand_ids.add(usage_file_nid)
+                        # In a more advanced system, we could find the specific
+                        # function (block) node containing the usage and expand only that.
+                        # For now, expanding the whole file is a safe and effective strategy.
+
+    # Build the Machine Core with intelligent context expansion
+    machine_core = build_machine_core(root, expand_ids=list(expand_ids))
+
+    # Create patch skeletons
     patches: List[Dict[str, Any]] = []
     for t in targets:
         chosen_op = op
@@ -136,7 +121,7 @@ The following JSON object is the "Machine Core" of the project. It is a tree str
     - `t`: content type (`ptr`=pointer to file, `txt`=inline text, `sum`=summary)
     - `v`: the actual text content (if `t`=`txt`)
 
-Relevant files have been expanded into `txt` format within this tree. Use this context to understand the code and plan your changes.
+Relevant files and dependencies have been expanded into `txt` format within this tree. Use this context to understand the code and plan your changes.
 
 ```json
 {json.dumps(machine_core, indent=None, separators=(',', ':'))}

@@ -4,22 +4,11 @@ import json
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-def find_node_in_core(core: Dict[str, Any], path: str, qualname: Optional[str] = None) -> Optional[Dict[str, Any]]:
-    """Finds a specific node in a Machine Core by path and optional qualname."""
-    nodes = core.get("n", [])
-    for node in nodes:
-        node_data = node.get("d", {})
-        if node_data.get("p") == path:
-            if qualname:
-                if node.get("t") == "b" and node_data.get("a") == qualname:
-                    return node
-            elif node.get("t") == "f": # If no qualname, we are looking for the file node
-                return node
-    return None
+from codeatlas.py_extract import extract_qualname_source
 
 def build_proposal_packet(bundle_path: Path, packet_path: Path) -> Dict[str, Any]:
     """
-    Creates a self-contained proposal packet for review.
+    Creates a self-contained, causal proposal packet for review.
     """
     if not bundle_path.exists():
         return {"ok": False, "error": f"Bundle file not found: {bundle_path}"}
@@ -32,75 +21,57 @@ def build_proposal_packet(bundle_path: Path, packet_path: Path) -> Dict[str, Any
     except json.JSONDecodeError as e:
         return {"ok": False, "error": f"Invalid JSON in input files: {e}"}
 
-    proposals = []
-    machine_core = bundle.get("machine_core")
     goal = bundle.get("goal")
+    original_targets = bundle.get("targets", [])
+    root_path = Path(bundle.get("root", "."))
 
-    if not machine_core:
-        return {"ok": False, "error": "Machine Core not found in bundle."}
+    primary_changes = []
+    dependent_changes = []
 
+    # Helper to get original code
+    def get_before_code(path_str: str, qualname: Optional[str] = None) -> str:
+        full_path = root_path / path_str
+        if not full_path.exists():
+            return "[Original source file not found]"
+        
+        if qualname:
+            data = extract_qualname_source(full_path, qualname)
+            return data.get("text", "[Original symbol code not found]")
+        else:
+            return full_path.read_text(encoding="utf-8")
+
+    # Identify primary vs. dependent changes
     for op in packet:
-        op_type = op.get("op")
         path = op.get("path")
         qualname = op.get("qualname")
+        is_primary = False
+        for target in original_targets:
+            if target.get("path") == path and target.get("qualname") == qualname:
+                is_primary = True
+                break
         
-        if op_type == "replace_symbol":
-            # Find the "before" state from the bundle's Machine Core
-            original_node = find_node_in_core(machine_core, path, qualname)
-            if not original_node:
-                # This could happen if the core in the bundle wasn't expanded for this symbol.
-                # For now, we'll mark it as an error. A future improvement could be to
-                # re-run the extraction logic here.
-                proposals.append({
-                    "path": path,
-                    "qualname": qualname,
-                    "error": "Could not find original state in the provided bundle."
-                })
-                continue
+        change_detail = {
+            "path": path,
+            "qualname": qualname,
+            "before_code": get_before_code(path, qualname),
+            "after_code": op.get("new_code") if qualname else op.get("content")
+        }
+        
+        if is_primary:
+            primary_changes.append(change_detail)
+        else:
+            # Add a reason for the dependent change
+            change_detail["reason"] = f"Updates call site or dependency related to primary target."
+            dependent_changes.append(change_detail)
 
-            # The content of a symbol is its children's content, or its own if it's a leaf.
-            # This is complex. A simpler way is to re-use py_extract.
-            # Let's assume for now the bundle has the original text.
-            # The expanded file node should have it.
-            file_node = find_node_in_core(machine_core, path)
-            if file_node and file_node.get("d", {}).get("t") == "txt":
-                from codeatlas.py_extract import extract_qualname_source
-                # We need the root path to do this. It's in the bundle.
-                root_path = Path(bundle.get("root", "."))
-                full_path = root_path / path
-                
-                # We can't just use the text in the node, as it's the whole file.
-                # We need to re-extract the specific symbol text.
-                # This highlights a dependency: we need the original source on disk.
-                if full_path.exists():
-                    before_data = extract_qualname_source(full_path, qualname)
-                    before_text = before_data.get("text", "[Original code not found]")
-                else:
-                    before_text = "[Original source file not found]"
-            else:
-                before_text = "[Original file content not found in bundle]"
-
-            proposals.append({
-                "path": path,
-                "qualname": qualname,
-                "before_code": before_text,
-                "after_code": op.get("new_code")
-            })
-            
-        elif op_type == "replace_file":
-            file_node = find_node_in_core(machine_core, path)
-            before_text = "[File content not expanded in bundle]"
-            if file_node and file_node.get("d", {}).get("t") == "txt":
-                before_text = file_node["d"].get("v", "")
-                
-            proposals.append({
-                "path": path,
-                "before_code": before_text,
-                "after_code": op.get("content")
-            })
+    # If no primary changes were matched, treat all as primary (fallback)
+    if not primary_changes and dependent_changes:
+        primary_changes = dependent_changes
+        dependent_changes = []
 
     return {
         "ok": True,
         "goal": goal,
-        "proposals": proposals
+        "primary_changes": primary_changes,
+        "dependent_changes": dependent_changes
     }

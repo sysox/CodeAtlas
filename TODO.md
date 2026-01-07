@@ -36,3 +36,26 @@ This file tracks the immediate next tasks for the project.
 
 - [x] Create `src/codeatlas/proposal.py` to implement the logic for building the `proposal.json`.
 - [x] Implement `atlas package-proposal` command in `cli.py`.
+
+## Phase 7 (Complete)
+
+- [x] Create `src/codeatlas/humanize.py` to implement `render_proposal_yaml`.
+- [x] Update `atlas package-proposal` in `cli.py` to generate `proposal.yaml`.
+
+## Phase 8 (Complete)
+
+- [x] Create `src/codeatlas/analysis.py` to implement `find_usages`.
+- [x] Implement Granular Context Expansion in `compression.py`.
+- [x] Integrate dependency analysis into `plan.py`.
+
+## Phase 9 (Complete)
+
+- [x] Implement token estimation and user confirmation prompts in `cli.py`.
+- [x] Refactor `proposal.py` to generate hierarchical "Causal Change Proposals".
+- [x] Update `humanize.py` to render the new causal structure.
+
+## Future: Integration with BridgeAI
+
+- [ ] Migrate `src/codeatlas/apply.py` logic to the BridgeAI repository.
+- [ ] Migrate `src/codeatlas/llm.py` and cost estimation logic to the BridgeAI repository.
+- [ ] Refactor `CodeAtlas` to remove these components, finalizing its role as a pure context engine.

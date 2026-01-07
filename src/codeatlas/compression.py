@@ -6,80 +6,45 @@ from typing import Any, Dict, List, Optional
 
 from codeatlas.layout import AtlasPaths
 from codeatlas.state import load_nodes_jsonl
-from codeatlas.resolve import resolve_content
+from codeatlas.py_extract import extract_qualname_source
 
 def compress_node(node: Dict[str, Any], root: Optional[Path] = None, expand_content: bool = False) -> Dict[str, Any]:
     """
     Compresses a single node into the Generic Code Tree format.
-    
-    Output Format:
-    {
-      "i": "id",
-      "t": "type" (f=file, d=dir, b=block),
-      "c": ["child_id", ...],
-      "s": "summary",
-      "m": { ...metadata... },
-      "d": {  // Data / Content
-        "t": "ptr" | "txt", // Type of content
-        "p": "path",      // for ptr
-        "a": "anchor",    // for ptr
-        "v": "value"      // for txt
-      }
-    }
     """
     out = {}
     
-    # ID
+    # ID, Type, Children, Summary, Meta
     out["i"] = node.get("id")
-    
-    # Type mapping
     ntype = node.get("type")
-    if ntype == "file":
-        out["t"] = "f"
-    elif ntype == "directory" or ntype == "project":
-        out["t"] = "d"
-    elif ntype == "block":
-        out["t"] = "b"
-    else:
-        out["t"] = ntype[0] if ntype else "?"
-
-    # Children
-    children = node.get("children")
-    if children:
-        out["c"] = children
-
-    # Summary
-    summary = node.get("summary")
-    if summary:
-        out["s"] = summary
-
-    # Metadata (for blocks)
-    meta = node.get("meta")
-    if meta:
-        out["m"] = meta
-
-    # Content Data ("d")
-    data = {
-        "t": "ptr",
-        "p": node.get("path")
-    }
+    if ntype == "file": out["t"] = "f"
+    elif ntype in ["directory", "project"]: out["t"] = "d"
+    elif ntype == "block": out["t"] = "b"
+    else: out["t"] = ntype[0] if ntype else "?"
     
-    anchor = node.get("anchor")
-    if anchor:
-        data["a"] = anchor
+    if node.get("children"): out["c"] = node["children"]
+    if node.get("summary"): out["s"] = node["summary"]
+    if node.get("meta"): out["m"] = node["meta"]
+
+    # Default Content Data (Pointer)
+    data = {"t": "ptr", "p": node.get("path")}
+    if node.get("anchor"): data["a"] = node["anchor"]
         
     # Expansion Logic (Hybrid Model)
     if expand_content and root and node.get("path"):
         try:
-            # We need a more robust resolve_content that can handle anchors for blocks
-            # For now, we assume resolve_content can handle file IDs and we expand the whole file
             if ntype == "file":
-                content = resolve_content(root, node["id"])
-                data = {
-                    "t": "txt",
-                    "v": content
-                }
+                # For files, we still expand the whole file for now.
+                # A future optimization could be to only expand relevant parts.
+                content = (root / node["path"]).read_text(encoding="utf-8")
+                data = {"t": "txt", "v": content}
+            elif ntype == "block" and node.get("anchor"):
+                # For blocks (symbols), we expand just that symbol's code.
+                extract_res = extract_qualname_source(root / node["path"], node["anchor"])
+                if extract_res.get("ok"):
+                    data = {"t": "txt", "v": extract_res["text"]}
         except Exception:
+            # Fallback to pointer if resolution fails
             pass
 
     out["d"] = data
@@ -97,28 +62,16 @@ def build_machine_core(root: Path, expand_ids: Optional[List[str]] = None) -> Di
     root = root.resolve()
     ap = AtlasPaths(root)
     
-    # Load raw nodes
     nodes = load_nodes_jsonl(ap.nodes_path)
     
-    # Compress each node
     compressed_nodes = []
     for n in nodes:
         should_expand = expand_ids and n.get("id") in expand_ids
         compressed_nodes.append(compress_node(n, root=root, expand_content=should_expand))
     
-    # Create the core object
     core = {
-        "v": 2, # Version 2 for Generic C model
+        "v": 2,
         "n": compressed_nodes
     }
     
     return core
-
-if __name__ == "__main__":
-    import sys
-    root_path = Path(".")
-    if len(sys.argv) > 1:
-        root_path = Path(sys.argv[1])
-    
-    core = build_machine_core(root_path)
-    print(json.dumps(core, indent=None, separators=(',', ':')))

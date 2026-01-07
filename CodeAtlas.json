@@ -35,6 +35,8 @@
         "F_summarize",
         "F_compression",
         "F_proposal",
+        "F_humanize",
+        "F_analysis",
         "F_tests"
       ],
       "ext": {}
@@ -519,6 +521,41 @@
       "path": "src/codeatlas/proposal.py",
       "anchor": "build_proposal_packet",
       "summary": "Combines original bundle and change packet into a reviewable proposal.",
+      "children": [],
+      "ext": {}
+    },
+    
+    {
+      "id": "F_humanize",
+      "type": "file",
+      "path": "src/codeatlas/humanize.py",
+      "summary": "Generates human-readable reports from machine data.",
+      "children": ["B_render_proposal_yaml"],
+      "ext": {}
+    },
+    {
+      "id": "B_render_proposal_yaml",
+      "type": "block",
+      "path": "src/codeatlas/humanize.py",
+      "anchor": "render_proposal_yaml",
+      "summary": "Creates a concise YAML report for human review of a proposal.",
+      "children": [],
+      "ext": {}
+    },
+    {
+      "id": "F_analysis",
+      "type": "file",
+      "path": "src/codeatlas/analysis.py",
+      "summary": "Provides code analysis features like finding usages.",
+      "children": ["B_find_usages_with_grep"],
+      "ext": {}
+    },
+    {
+      "id": "B_find_usages_with_grep",
+      "type": "block",
+      "path": "src/codeatlas/analysis.py",
+      "anchor": "find_usages_with_grep",
+      "summary": "Finds potential usages of a symbol using grep.",
       "children": [],
       "ext": {}
     },
