@@ -1,0 +1,432 @@
+# Project Cheatsheet
+# Level: 2
+
+files:
+  - path: .gitignore
+  - path: .idea/.gitignore
+  - path: .idea/CodeAtlas.iml
+  - path: .idea/inspectionProfiles/profiles_settings.xml
+  - path: .idea/misc.xml
+  - path: .idea/modules.xml
+  - path: .idea/vcs.xml
+  - path: .idea/workspace.xml
+  - path: .pytest_cache/.gitignore
+  - path: .pytest_cache/CACHEDIR.TAG
+  - path: .pytest_cache/README.md
+  - path: .pytest_cache/v/cache/lastfailed
+  - path: .pytest_cache/v/cache/nodeids
+  - path: CHEATSHEET_PRO.yaml
+  - path: CodeAtlas.json
+  - path: PLAN.md
+  - path: README.md
+  - path: TODO.md
+  - path: codeatlas.core.pro.json
+  - path: debug_index.py
+  - path: pyproject.toml
+  - path: src/codeatlas/__init__.py
+  - path: src/codeatlas/__pycache__/__init__.cpython-312.pyc
+  - path: src/codeatlas/__pycache__/analysis.cpython-312.pyc
+  - path: src/codeatlas/__pycache__/apply.cpython-312.pyc
+  - path: src/codeatlas/__pycache__/cli.cpython-312.pyc
+  - path: src/codeatlas/__pycache__/compression.cpython-312.pyc
+  - path: src/codeatlas/__pycache__/ctx.cpython-312.pyc
+  - path: src/codeatlas/__pycache__/diff.cpython-312.pyc
+  - path: src/codeatlas/__pycache__/fingerprint.cpython-312.pyc
+  - path: src/codeatlas/__pycache__/grep.cpython-312.pyc
+  - path: src/codeatlas/__pycache__/humanize.cpython-312.pyc
+  - path: src/codeatlas/__pycache__/index.cpython-312.pyc
+  - path: src/codeatlas/__pycache__/layout.cpython-312.pyc
+  - path: src/codeatlas/__pycache__/llm.cpython-312.pyc
+  - path: src/codeatlas/__pycache__/model.cpython-312.pyc
+  - path: src/codeatlas/__pycache__/patch_skel.cpython-312.pyc
+  - path: src/codeatlas/__pycache__/plan.cpython-312.pyc
+  - path: src/codeatlas/__pycache__/proposal.cpython-312.pyc
+  - path: src/codeatlas/__pycache__/py_extract.cpython-312.pyc
+  - path: src/codeatlas/__pycache__/py_symbols.cpython-312.pyc
+  - path: src/codeatlas/__pycache__/resolve.cpython-312.pyc
+  - path: src/codeatlas/__pycache__/scan.cpython-312.pyc
+  - path: src/codeatlas/__pycache__/state.cpython-312.pyc
+  - path: src/codeatlas/__pycache__/store_init.cpython-312.pyc
+  - path: src/codeatlas/__pycache__/summarize.cpython-312.pyc
+  - path: src/codeatlas/analysis.py
+    symbols:
+      - name: find_usages_with_grep
+        qualname: find_usages_with_grep
+        summary: 'Given a root directory and a symbol, `find_usages_with_grep` uses `git grep` to find potential usages of the symbol within files under that directory, returning a list of dictionaries containing the file path, line number, and code snippet for each match.'
+  - path: src/codeatlas/apply.py
+    symbols:
+      - name: SymbolReplacer
+        qualname: SymbolReplacer
+        summary: "The SymbolReplacer class is a LibCST transformer that replaces a specified function or class definition within a Python code's CST (Concrete Syntax Tree) with new code provided as a string, using the fully qualified name to identify the target symbol."
+        children:
+          - name: __init__
+            qualname: SymbolReplacer.__init__
+            summary: "Initializes the `SymbolReplacer` instance with the target symbol's qualified name and new code, and sets up internal state for tracking the replacement process."
+          - name: visit_ClassDef
+            qualname: SymbolReplacer.visit_ClassDef
+            summary: "The `visit_ClassDef` method of the `SymbolReplacer` class pushes the class name onto a stack to track the current qualified name and returns `True` to continue traversing the class's child nodes."
+          - name: leave_ClassDef
+            qualname: SymbolReplacer.leave_ClassDef
+            summary: "Pops the current class's qualified name from a tracking stack and delegates to a shared helper method to finalize the processing of the `ClassDef` node after its children have been visited."
+          - name: visit_FunctionDef
+            qualname: SymbolReplacer.visit_FunctionDef
+            summary: 'The `visit_FunctionDef` method adds the name of a function definition node to a stack to track the current qualified name and returns `True` to continue traversing the tree.'
+          - name: leave_FunctionDef
+            qualname: SymbolReplacer.leave_FunctionDef
+            summary: "Pops the current function's qualified name from a state stack and delegates the final node transformation to a common helper method upon leaving a `cst.FunctionDef` node during a tree traversal."
+          - name: _leave_definable_node
+            qualname: SymbolReplacer._leave_definable_node
+            summary: "If the current node's qualified name matches the target qualified name, this function replaces the node with a parsed CST node derived from provided code, otherwise, it returns the updated node."
+      - name: apply_with_cst
+        qualname: apply_with_cst
+        summary: 'Replaces a specified symbol in Python source code with new code using LibCST, returning the modified source code and a boolean indicating success.'
+      - name: run_command
+        qualname: run_command
+        summary: 'The `run_command` function executes a shell command in a specified directory, captures its output, and returns a dictionary containing the command, exit code, standard output, and standard error.'
+      - name: apply_change_packet
+        qualname: apply_change_packet
+        summary: 'The `apply_change_packet` function applies code changes, executes shell commands, and performs git operations defined in a change packet (JSON file) to a given workspace, returning a dictionary containing the results of each operation.'
+  - path: src/codeatlas/cli.py
+    symbols:
+      - name: main
+        qualname: main
+        summary: 'The `main` function parses command-line arguments to execute various atlas subcommands for workspace management, indexing, code analysis, and applying changes, returning an exit code.'
+  - path: src/codeatlas/compression.py
+    symbols:
+      - name: compress_node
+        qualname: compress_node
+        summary: 'The `compress_node` function transforms a node dictionary into a compressed format for a Generic Code Tree, optionally expanding file or block content from disk based on provided path and anchor information, and returns the compressed dictionary.'
+      - name: build_machine_core
+        qualname: build_machine_core
+        summary: "The `build_machine_core` function compresses a project's nodes into a dictionary representation, optionally expanding specified node IDs, and returns a dictionary containing the compressed nodes and version information."
+  - path: src/codeatlas/ctx.py
+    symbols:
+      - name: _cap_bytes
+        qualname: _cap_bytes
+        summary: 'The function `_cap_bytes` truncates a UTF-8 string `s` to a maximum byte length `max_bytes`, returning the truncated string and a boolean indicating whether truncation occurred.'
+      - name: _slice_lines
+        qualname: _slice_lines
+        summary: 'The `_slice_lines` function takes a string, an optional head integer, and an optional tail integer as input, and returns a tuple containing a sliced string based on head/tail parameters and a boolean indicating whether the string was truncated.'
+      - name: build_ctx
+        qualname: build_ctx
+        summary: 'The `build_ctx` function resolves nodes from a list of paths and IDs within a root directory, optionally fetching and manipulating their content based on slicing and size parameters, and returns a JSON-serializable dictionary containing the resulting context bundle and any errors.'
+  - path: src/codeatlas/diff.py
+    symbols:
+      - name: compute_diff
+        qualname: compute_diff
+        summary: 'This function computes the difference between the current and previously saved file fingerprints within a given root directory, returning a dictionary with the total file count and a diff of added, modified, and removed files.'
+  - path: src/codeatlas/fingerprint.py
+    symbols:
+      - name: fingerprint_file
+        qualname: fingerprint_file
+        summary: 'Computes the SHA-256 hash for the file at the given `path` by reading it in chunks and returns the result as a hexadecimal string.'
+      - name: build_fingerprints
+        qualname: build_fingerprints
+        summary: 'The function `build_fingerprints` takes a root path and a list of relative paths, calculates a fingerprint for each file at the joined path, and returns a dictionary mapping relative paths to their corresponding fingerprints.'
+      - name: diff_fingerprints
+        qualname: diff_fingerprints
+        summary: 'The function `diff_fingerprints` takes two dictionaries representing old and new fingerprints and returns a dictionary containing lists of added, deleted, changed, and unchanged keys between the two input dictionaries.'
+  - path: src/codeatlas/grep.py
+    symbols:
+      - name: grep_snippets
+        qualname: grep_snippets
+        summary: 'Given a root directory, file path, and regex pattern, `grep_snippets` searches the file for the pattern and returns a dictionary containing the matching snippets along with context lines, match line numbers, and truncation status.'
+  - path: src/codeatlas/humanize.py
+    symbols:
+      - name: _generate_diff
+        qualname: _generate_diff
+        summary: 'This function takes two strings (`before`, `after`) and a filename, and returns a unified diff string representing the differences between the two input strings.'
+      - name: _render_changes_to_yaml
+        qualname: _render_changes_to_yaml
+        summary: 'The function `_render_changes_to_yaml` takes a list of change dictionaries and a list of strings, then formats those changes as YAML lines representing file modifications and symbol changes with their reasons and diffs, appending them to the provided list of strings.'
+      - name: render_proposal_yaml
+        qualname: render_proposal_yaml
+        summary: "The function `render_proposal_yaml` takes a causal proposal packet as a dictionary and returns a human-readable YAML report string summarizing the proposal's goal and changes."
+      - name: render_project_cheatsheet
+        qualname: render_project_cheatsheet
+        summary: "Generates a YAML-formatted string summarizing a project's structure from a `machine_core` dictionary, with the detail controlled by an optional `level` integer."
+        children:
+          - name: render_node
+            qualname: render_project_cheatsheet.render_node
+            summary: 'The `render_node` function recursively renders a project cheatsheet node (file or block/symbol) with specified indentation, displaying its path, qualname, summary, and children based on its type and attributes within the `node_map`.'
+  - path: src/codeatlas/index.py
+    symbols:
+      - name: _kind_from_path
+        qualname: _kind_from_path
+        summary: "Given a relative file path, `_kind_from_path` determines the file type based on its extension and returns a string representing the file kind (e.g., 'py', 'md', 'txt')."
+      - name: build_or_update
+        qualname: build_or_update
+        summary: 'The `build_or_update` function deeply indexes a workspace by creating file and symbol nodes, linking them hierarchically, and then serializing the results to JSON files, returning a summary of the indexing process.'
+  - path: src/codeatlas/layout.py
+    symbols:
+      - name: AtlasPaths
+        qualname: AtlasPaths
+        summary: 'The `AtlasPaths` class manages and provides access to various file paths within an Atlas project, derived from a root directory, ensuring their existence when needed.'
+        children:
+          - name: atlas_dir
+            qualname: AtlasPaths.atlas_dir
+            summary: "Returns a `Path` object representing the `.atlas` directory located within the object's root directory."
+          - name: cfg_path
+            qualname: AtlasPaths.cfg_path
+            summary: 'Returns a `Path` object for the `cfg.json` configuration file located within the atlas directory.'
+          - name: tree_dir
+            qualname: AtlasPaths.tree_dir
+            summary: "The `tree_dir` method returns a Path object representing the 'tree' subdirectory within the atlas directory."
+          - name: nodes_path
+            qualname: AtlasPaths.nodes_path
+            summary: 'Returns the `Path` object for the `nodes.jsonl` file located within the `tree_dir` directory.'
+          - name: index_dir
+            qualname: AtlasPaths.index_dir
+            summary: 'The `index_dir` method returns a Path object representing the directory where the index files are stored, which is located under the tree directory in a subdirectory named "index".'
+          - name: paths_index_path
+            qualname: AtlasPaths.paths_index_path
+            summary: "Returns the `Path` object for the `paths.json` file located within the object's `index_dir`."
+          - name: fingerprints_path
+            qualname: AtlasPaths.fingerprints_path
+            summary: "Returns the path to the 'fingerprints.json' file within the Atlas tree directory."
+          - name: blobs_dir
+            qualname: AtlasPaths.blobs_dir
+            summary: "Returns a `Path` object representing the 'blobs' subdirectory within the `tree_dir`."
+          - name: log_dir
+            qualname: AtlasPaths.log_dir
+            summary: "Returns the `Path` object for the log directory, which is a subdirectory named 'log' within the main atlas directory."
+          - name: ensure_dirs
+            qualname: AtlasPaths.ensure_dirs
+            summary: 'The `ensure_dirs` method creates the atlas, tree, index, blobs, and log directories if they do not already exist.'
+  - path: src/codeatlas/llm.py
+    symbols:
+      - name: call_llm_api
+        qualname: call_llm_api
+        summary: "Given a prompt and LLM configuration, `call_llm_api` calls the specified LLM provider (OpenAI or Gemini) API with the prompt and returns the API's JSON response or an error message if the API key is missing or the provider is unsupported."
+      - name: _call_openai
+        qualname: _call_openai
+        summary: 'The function `_call_openai` sends a prompt to the OpenAI API using provided API key and configuration, and returns a dictionary containing the parsed JSON response or an error message if the request or parsing fails.'
+      - name: _call_gemini
+        qualname: _call_gemini
+        summary: 'The `_call_gemini` function sends a prompt to the Gemini API with specified configurations and API key, returning a JSON object containing the API response or an error message.'
+  - path: src/codeatlas/model.py
+    symbols:
+      - name: Node
+        qualname: Node
+        summary: 'The Node class represents a document node with attributes like ID, type, path, anchor, summary, children, and metadata, providing methods to convert the node to and from a dictionary representation.'
+        children:
+          - name: to_dict
+            qualname: Node.to_dict
+            summary: 'The `to_dict` method converts a Node object into a dictionary representation, including its id, type, path, children, and optionally anchor, summary, and meta attributes.'
+          - name: from_dict
+            qualname: Node.from_dict
+            summary: "The `Node.from_dict` function constructs a `Node` object from a dictionary, using keys like 'id', 'type', and 'path', and optional keys like 'anchor', 'summary', 'children', and 'meta'."
+      - name: make_id
+        qualname: make_id
+        summary: 'The `make_id` function generates a deterministic ID string based on the input kind, relative path, and optional anchor, returning a unique identifier for referencing a specific element.'
+  - path: src/codeatlas/patch_skel.py
+    symbols:
+      - name: patch_skeleton
+        qualname: patch_skeleton
+        summary: 'The `patch_skeleton` function creates a dictionary representing a BridgeAI patch packet for replacing either a symbol or a file, based on provided path, qualname, operation type, and optional run and commit details.'
+  - path: src/codeatlas/plan.py
+    symbols:
+      - name: Target
+        qualname: Target
+        summary: 'The `Target` class represents a Python object to be documented, storing its file path and optionally its qualified name.'
+      - name: parse_target
+        qualname: parse_target
+        summary: 'The function `parse_target` takes a string representing a target path (optionally with a qualname) and returns a `Target` object containing the parsed path and qualname.'
+      - name: build_plan
+        qualname: build_plan
+        summary: 'The `build_plan` function creates a single-target build plan dictionary from specified parameters like root path, goal, target path/qualname, content flag, operation, run commands, commit hash, head/tail lines, and maximum bytes.'
+      - name: build_plan_multi
+        qualname: build_plan_multi
+        summary: 'Given a root path, goal, targets, and operation, `build_plan_multi` constructs a plan including a machine core with intelligently expanded context and patch skeletons for applying changes to the target files or symbols.'
+      - name: render_prompt_text
+        qualname: render_prompt_text
+        summary: 'The `render_prompt_text` function takes a dictionary containing project context, a goal, and a skeleton of changes, and returns a formatted text prompt for an LLM to complete the JSON skeleton.'
+  - path: src/codeatlas/proposal.py
+    symbols:
+      - name: build_proposal_packet
+        qualname: build_proposal_packet
+        summary: 'Given paths to a bundle and a change packet (both JSON files), `build_proposal_packet` constructs a dictionary containing the goal, primary code changes, and dependent code changes, extracting before and after code snippets for review.'
+        children:
+          - name: get_before_code
+            qualname: build_proposal_packet.get_before_code
+            summary: 'The `get_before_code` function retrieves the source code of a file or a specific symbol within a file, returning the code as a string, or an error message if the file or symbol is not found.'
+  - path: src/codeatlas/py_extract.py
+    symbols:
+      - name: extract_qualname_source
+        qualname: extract_qualname_source
+        summary: 'Given a file path and a qualified name, this function extracts the corresponding source code snippet along with its start and end lines, returning a dictionary containing the path, qualified name, line numbers, and the source text or an error message if the file or qualified name is not found.'
+  - path: src/codeatlas/py_symbols.py
+    symbols:
+      - name: Sym
+        qualname: Sym
+        summary: 'The `Sym` class represents a symbol (class, function, or method) with its qualified name, kind, and line numbers, and provides a method to convert its attributes to a dictionary.'
+        children:
+          - name: to_dict
+            qualname: Sym.to_dict
+            summary: 'The `to_dict` method converts a `Sym` object into a dictionary containing its qualname, kind, start line, and end line.'
+      - name: _Visitor
+        qualname: _Visitor
+        summary: 'The `_Visitor` class traverses an Abstract Syntax Tree (AST) to extract symbols (classes, functions, methods) with their qualified names and location, storing them in a list.'
+        children:
+          - name: __init__
+            qualname: _Visitor.__init__
+            summary: 'The `_Visitor.__init__` method initializes a visitor object with an empty stack and an empty output list for storing symbols.'
+          - name: visit_ClassDef
+            qualname: _Visitor.visit_ClassDef
+            summary: 'The `visit_ClassDef` method visits a class definition node in the AST, records its qualified name, line numbers, and type, then recursively visits its children while maintaining a stack of nested names.'
+          - name: visit_FunctionDef
+            qualname: _Visitor.visit_FunctionDef
+            summary: 'The `visit_FunctionDef` method visits a function definition node in the AST, processing it using the `_visit_fn` method, and returns a result of any type.'
+          - name: visit_AsyncFunctionDef
+            qualname: _Visitor.visit_AsyncFunctionDef
+            summary: 'Visits an `ast.AsyncFunctionDef` node and delegates its processing to the `_visit_fn` method.'
+          - name: _visit_fn
+            qualname: _Visitor._visit_fn
+            summary: 'The `_visit_fn` method records function or method symbol information (qualified name, kind, line numbers) in the output list while traversing the Abstract Syntax Tree (AST), using a stack to maintain the namespace context.'
+      - name: list_python_symbols
+        qualname: list_python_symbols
+        summary: 'The function `list_python_symbols` parses a Python file, extracts symbols (qualnames and line spans), and returns a list of dictionaries representing these symbols.'
+  - path: src/codeatlas/resolve.py
+    symbols:
+      - name: lookup_path
+        qualname: lookup_path
+        summary: 'Given a root path and a relative path, this function retrieves a stored absolute path string from a JSON index if it exists, otherwise returns None.'
+      - name: resolve_node
+        qualname: resolve_node
+        summary: "Given a root path and a node ID, `resolve_node` retrieves the node's data dictionary from a nodes map file if it exists, otherwise returns None."
+      - name: resolve_content
+        qualname: resolve_content
+        summary: 'Given a root path and a node ID representing a relative file path, `resolve_content` reads and returns the text content of the file specified by the path relative to the root, after validating the node ID format.'
+  - path: src/codeatlas/scan.py
+    symbols:
+      - name: _match_any
+        qualname: _match_any
+        summary: 'The function `_match_any` checks if a given POSIX path string matches any of the provided filename patterns using `fnmatch`, and returns `True` if at least one pattern matches, `False` otherwise.'
+      - name: scan_files
+        qualname: scan_files
+        summary: 'The `scan_files` function recursively traverses a directory, filtering files based on inclusion and exclusion lists, and returns a sorted list of relative POSIX paths of the included files.'
+  - path: src/codeatlas/state.py
+    symbols:
+      - name: load_json
+        qualname: load_json
+        summary: 'This function attempts to load and parse a JSON file from a given path, returning a default value if the file does not exist or is empty.'
+      - name: write_json
+        qualname: write_json
+        summary: 'Writes a Python object to a JSON file at a specified path, creating parent directories if needed, and ensuring UTF-8 encoding and pretty formatting.'
+      - name: load_nodes_jsonl
+        qualname: load_nodes_jsonl
+        summary: 'The `load_nodes_jsonl` function reads a JSONL file from a given path, parses each line as a JSON object, and returns a list of dictionaries representing the nodes, returning an empty list if the file does not exist.'
+      - name: load_nodes_map
+        qualname: load_nodes_map
+        summary: 'The `load_nodes_map` function loads node data from a JSONL file, returning a dictionary mapping node IDs (strings) to node data dictionaries.'
+      - name: write_nodes_jsonl
+        qualname: write_nodes_jsonl
+        summary: 'This function writes a sequence of node dictionaries to a JSONL file, creating parent directories if necessary, encoding each dictionary as a JSON string, joining them with newlines, and writing the result to the specified path.'
+  - path: src/codeatlas/store_init.py
+    symbols:
+      - name: init_workspace
+        qualname: init_workspace
+        summary: 'Initializes an Atlas workspace at a given root path by creating the `.atlas` directory and default configuration files if they are missing, then returns an `AtlasPaths` object.'
+  - path: src/codeatlas/summarize.py
+    symbols:
+      - name: generate_summary_prompt
+        qualname: generate_summary_prompt
+        summary: 'The `generate_summary_prompt` function takes a symbol name and its code as input and returns a formatted string that serves as a prompt for generating a concise, one-sentence summary of the Python symbol.'
+      - name: summarize_symbols
+        qualname: summarize_symbols
+        summary: 'Given a root directory and optional file paths, `summarize_symbols` iterates through symbol nodes, extracts source code, generates summary prompts, and either calls an LLM to generate summaries or saves the prompts to files, returning a dictionary containing the results and the output directory.'
+      - name: update_spec_with_summaries
+        qualname: update_spec_with_summaries
+        summary: 'This function reads generated summaries from a directory, updates the `CodeAtlas.json` and `nodes.jsonl` files with these summaries based on file path and qualified name, and returns a dictionary indicating success and the number of updated nodes.'
+  - path: tests/__pycache__/test_ctx.cpython-312-pytest-9.0.2.pyc
+  - path: tests/__pycache__/test_diff.cpython-312-pytest-9.0.2.pyc
+  - path: tests/__pycache__/test_grep.cpython-312-pytest-9.0.2.pyc
+  - path: tests/__pycache__/test_index_basic.cpython-312-pytest-9.0.2.pyc
+  - path: tests/__pycache__/test_init.cpython-312-pytest-9.0.2.pyc
+  - path: tests/__pycache__/test_patch_skel.cpython-312-pytest-9.0.2.pyc
+  - path: tests/__pycache__/test_plan.cpython-312-pytest-9.0.2.pyc
+  - path: tests/__pycache__/test_plan_multi.cpython-312-pytest-9.0.2.pyc
+  - path: tests/__pycache__/test_py_extract.cpython-312-pytest-9.0.2.pyc
+  - path: tests/__pycache__/test_py_symbols.cpython-312-pytest-9.0.2.pyc
+  - path: tests/__pycache__/test_resolve.cpython-312-pytest-9.0.2.pyc
+  - path: tests/__pycache__/test_smoke.cpython-312-pytest-9.0.2.pyc
+  - path: tests/test_apply.py
+    symbols:
+      - name: test_apply_replace_symbol
+        qualname: test_apply_replace_symbol
+        summary: 'The `test_apply_replace_symbol` function tests the `apply_change_packet` function by creating a file, defining a change packet to replace a symbol (function), applying the change, and asserting that the symbol is replaced and the overall operation is successful.'
+      - name: test_apply_replace_nested_symbol
+        qualname: test_apply_replace_nested_symbol
+        summary: "The `test_apply_replace_nested_symbol` function tests the `apply_change_packet` function's ability to replace a method within a class in a Python file, taking a temporary path as input and asserting that the replacement is successful."
+      - name: test_apply_multiple_replacements
+        qualname: test_apply_multiple_replacements
+        summary: 'The `test_apply_multiple_replacements` function tests the ability of `apply_change_packet` to replace multiple symbols in a file given a change packet containing replacement operations, asserting the success of the operation and verifying the updated file content.'
+  - path: tests/test_ctx.py
+    symbols:
+      - name: test_ctx_returns_items_and_content
+        qualname: test_ctx_returns_items_and_content
+        summary: 'The function `test_ctx_returns_items_and_content` tests that the `build_ctx` function returns items with content from specified files, limiting the number of lines based on the head parameter.'
+      - name: test_ctx_max_bytes_truncates
+        qualname: test_ctx_max_bytes_truncates
+        summary: 'The function `test_ctx_max_bytes_truncates` tests that `build_ctx` truncates file content to a specified maximum byte size when the `max_bytes` parameter is provided, confirming the `truncated` flag is set to `True`.'
+  - path: tests/test_diff.py
+    symbols:
+      - name: test_diff_added_changed_deleted
+        qualname: test_diff_added_changed_deleted
+        summary: 'This test function checks if the `compute_diff` function correctly identifies added, changed, and deleted files in a workspace by creating, modifying, and deleting files within a temporary directory, then asserting the results of the diff computation.'
+  - path: tests/test_grep.py
+    symbols:
+      - name: test_grep_snippets_basic
+        qualname: test_grep_snippets_basic
+        summary: 'The function `test_grep_snippets_basic` tests the `grep_snippets` function by creating a file, searching for a pattern with context, and asserting that the output contains a successful match with the correct line number and snippet.'
+      - name: test_grep_invalid_regex
+        qualname: test_grep_invalid_regex
+        summary: "Tests the grep_snippets function's ability to handle invalid regular expression patterns by asserting that it returns 'ok' as False when provided with an invalid regex."
+  - path: tests/test_index_basic.py
+    symbols:
+      - name: test_index_creates_paths_index_and_meta
+        qualname: test_index_creates_paths_index_and_meta
+        summary: 'This test function creates files within a temporary directory, initializes a workspace, builds or updates the index, and verifies that the paths index and node metadata are correctly created and populated with file information such as type, path, metadata kind, size, and SHA256 hash.'
+  - path: tests/test_init.py
+    symbols:
+      - name: test_init_creates_atlas_layout
+        qualname: test_init_creates_atlas_layout
+        summary: 'The `test_init_creates_atlas_layout` function tests that the `init_workspace` function correctly creates the atlas directory and necessary configuration files, tree structure, node files, index directory, paths index, and fingerprint files within a temporary directory.'
+  - path: tests/test_patch_skel.py
+    symbols:
+      - name: test_patch_skeleton_replace_symbol
+        qualname: test_patch_skeleton_replace_symbol
+        summary: "This test verifies that the `patch_skeleton` function correctly creates a patch operation that replaces the symbol 'A.m' in the file 'x.py'."
+      - name: test_patch_skeleton_replace_file
+        qualname: test_patch_skeleton_replace_file
+        summary: "The function `test_patch_skeleton_replace_file` creates a patch skeleton dictionary with a 'replace_file' operation containing the file's content."
+  - path: tests/test_plan.py
+    symbols:
+      - name: test_plan_includes_machine_core_and_patch
+        qualname: test_plan_includes_machine_core_and_patch
+        summary: 'The function `test_plan_includes_machine_core_and_patch` tests that the build plan includes machine core and patches, while verifying their structure and content.'
+  - path: tests/test_plan_multi.py
+    symbols:
+      - name: test_plan_multi_two_targets
+        qualname: test_plan_multi_two_targets
+        summary: "The function `test_plan_multi_two_targets` creates a test plan involving two targets ('a.py' and 'README.md') for symbol replacement and file replacement, respectively, within a specified directory, using the `build_plan_multi` function and asserts for success."
+  - path: tests/test_py_extract.py
+    symbols:
+      - name: test_extract_qualname_source
+        qualname: test_extract_qualname_source
+        summary: 'The `test_extract_qualname_source` function tests the `extract_qualname_source` function by creating a temporary Python file, writing class and function definitions to it, and then asserting that the `extract_qualname_source` function correctly extracts the source code for a given qualified name from the file.'
+  - path: tests/test_py_symbols.py
+    symbols:
+      - name: test_py_symbols_basic
+        qualname: test_py_symbols_basic
+        summary: 'The `test_py_symbols_basic` function creates a Python file, populates it with a class and a function, and then asserts that `list_python_symbols` correctly identifies and lists the qualified names of the symbols defined within the file.'
+  - path: tests/test_resolve.py
+    symbols:
+      - name: test_resolve_returns_file_content
+        qualname: test_resolve_returns_file_content
+        summary: 'This test verifies that `resolve_content` function correctly retrieves the content of a file given its node ID within a workspace.'
+  - path: tests/test_smoke.py
+    symbols:
+      - name: test_import
+        qualname: test_import
+        summary: "This function tests the import of the 'codeatlas' module and asserts that its '__version__' attribute exists, verifying the module is correctly installed and accessible."
