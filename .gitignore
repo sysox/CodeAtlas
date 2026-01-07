@@ -5,8 +5,15 @@ __pycache__/
 dist/
 build/
 *.egg-info/
-#.atlas/
 
 # IDEs
 .idea/
 *.iml
+
+# Ignore the atlas directory by default...
+.atlas/
+
+# ...but make exceptions for files we DO want to track.
+!/.atlas/cfg.json
+!/.atlas/llm_cfg.json
+!/.atlas/summaries/

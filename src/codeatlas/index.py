@@ -33,7 +33,6 @@ def _kind_from_path(relpath: str) -> str:
 def build_or_update(root: Path) -> Dict[str, Any]:
     """
     Performs a deep index of the workspace, creating nodes for files and symbols.
-    Writes nodes.jsonl, paths.json, and fingerprints.json.
     """
     root = root.resolve()
     ap = AtlasPaths(root)
@@ -50,109 +49,91 @@ def build_or_update(root: Path) -> Dict[str, Any]:
     new_fp: Dict[str, str] = build_fingerprints(root, relpaths)
     diff = diff_fingerprints(old_fp, new_fp)
 
-    all_nodes: List[Dict[str, Any]] = []
+    # --- Pass 1: Create all nodes (files and symbols) with empty children ---
+    
+    all_nodes: List[Node] = []
     path_index: Dict[str, str] = {}
-
-    # root node
-    root_id = "root"
-    root_children_ids: List[str] = []
+    symbols_to_process: List[Dict[str, Any]] = []
 
     for rp in relpaths:
         p = root / rp
         try:
-            if not p.is_file():
-                continue
+            if not p.is_file(): continue
             size = p.stat().st_size
-            if size > max_file_bytes:
-                continue
+            if size > max_file_bytes: continue
         except FileNotFoundError:
             continue
 
         file_id = make_id("path", rp)
-        root_children_ids.append(file_id)
         path_index[rp] = file_id
         
-        file_children_ids = []
-        
-        # If it's a Python file, perform deep symbol indexing
+        meta = {"kind": _kind_from_path(rp), "bytes": int(size), "sha256": new_fp.get(rp)}
+        all_nodes.append(Node(id=file_id, type="file", path=rp, children=[], meta=meta))
+
         if _kind_from_path(rp) == "py":
             try:
-                symbols = list_python_symbols(p)
-                # print(f"DEBUG: Found {len(symbols)} symbols in {rp}")
-                
-                # Map qualname -> symbol_id for parent lookup
-                sym_id_map = {}
-                
-                # First pass: Create IDs and Nodes for all symbols
-                for sym in symbols:
+                py_symbols = list_python_symbols(p)
+                for sym in py_symbols:
                     qualname = sym["qualname"]
                     symbol_id = make_id("symbol", rp, qualname)
-                    sym_id_map[qualname] = symbol_id
                     
                     symbol_node = Node(
                         id=symbol_id,
                         type="block",
                         path=rp,
                         anchor=qualname,
-                        summary=None,
-                        children=[], # Will fill in second pass
+                        children=[],
                         meta={
                             "kind": sym["kind"],
                             "start_line": sym["start_line"],
                             "end_line": sym["end_line"],
                         }
                     )
-                    all_nodes.append(symbol_node.to_dict())
-
-                # Second pass: Link children to parents
-                # We need to find the node objects we just created to update their children list.
-                # Since all_nodes is a list of dicts, let's make a temporary map for easy access.
-                node_map = {n["id"]: n for n in all_nodes if n["path"] == rp and n["type"] == "block"}
-
-                for sym in symbols:
-                    qualname = sym["qualname"]
-                    current_id = sym_id_map[qualname]
-                    
-                    if "." in qualname:
-                        # It's a nested symbol (e.g., Class.method)
-                        parent_qualname = qualname.rsplit(".", 1)[0]
-                        parent_id = sym_id_map.get(parent_qualname)
-                        
-                        if parent_id and parent_id in node_map:
-                            # Add to parent symbol's children
-                            node_map[parent_id]["children"].append(current_id)
-                        else:
-                            # Parent not found (shouldn't happen if symbols are complete), fallback to file
-                            file_children_ids.append(current_id)
-                    else:
-                        # It's a top-level symbol, add to file's children
-                        file_children_ids.append(current_id)
-
+                    all_nodes.append(symbol_node)
+                    # Store the symbol data along with its path for the linking pass
+                    symbols_to_process.append({**sym, "path": rp})
             except Exception as e:
-                print(f"Error indexing symbols in {rp}: {e}")
-                pass
+                print(f"Warning: Could not parse symbols in {rp}: {e}")
 
-        meta = {
-            "kind": _kind_from_path(rp),
-            "bytes": int(size),
-            "sha256": new_fp.get(rp)
-        }
+    # --- Pass 2: Create a map for easy lookup and link children ---
 
-        file_node = Node(id=file_id, type="file", path=rp, summary=None, children=file_children_ids, meta=meta)
-        all_nodes.append(file_node.to_dict())
+    node_map = {n.id: n for n in all_nodes}
+    sym_id_map = {make_id("symbol", s["path"], s["qualname"]): s for s in symbols_to_process}
 
-    # Add the project root node at the beginning
-    root_node = Node(id=root_id, type="project", path=".", summary="workspace root", children=root_children_ids)
-    all_nodes.insert(0, root_node.to_dict())
+    # Link symbols to their parents
+    for symbol_id, sym_data in sym_id_map.items():
+        qualname = sym_data["qualname"]
+        path = sym_data["path"]
+        
+        if "." in qualname:
+            parent_qualname = qualname.rsplit(".", 1)[0]
+            parent_id = make_id("symbol", path, parent_qualname)
+            if parent_id in node_map:
+                node_map[parent_id].children.append(symbol_id)
+            else: # Fallback to file
+                file_id = make_id("path", path)
+                if file_id in node_map:
+                    node_map[file_id].children.append(symbol_id)
+        else: # Top-level symbol
+            file_id = make_id("path", path)
+            if file_id in node_map:
+                node_map[file_id].children.append(symbol_id)
 
-    write_nodes_jsonl(ap.nodes_path, all_nodes)
+    # --- Pass 3: Create the final root node and serialize ---
+
+    root_children_ids = [make_id("path", rp) for rp in relpaths]
+    root_node = Node(id="root", type="project", path=".", summary="workspace root", children=root_children_ids)
+    
+    final_node_list = [root_node.to_dict()] + [n.to_dict() for n in all_nodes]
+
+    write_nodes_jsonl(ap.nodes_path, final_node_list)
     write_json(ap.paths_index_path, path_index)
     write_json(ap.fingerprints_path, new_fp)
 
     return {
         "ok": True,
         "files_total": len(relpaths),
-        "nodes_indexed": len(all_nodes),
+        "nodes_indexed": len(final_node_list),
         "diff": diff,
         "atlas_dir": str(ap.atlas_dir)
     }
