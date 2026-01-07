@@ -26,6 +26,35 @@ def parse_target(s: str) -> Target:
     return Target(path=s.strip(), qualname=None)
 
 
+def build_plan(
+    *,
+    root: Path,
+    goal: str,
+    path: str,
+    qualname: Optional[str],
+    content: bool,
+    head: Optional[int],
+    tail: Optional[int],
+    max_bytes: Optional[int],
+    op: str,
+    run: Optional[List[str]],
+    commit: Optional[str],
+) -> Dict[str, Any]:
+    """Backward-compatible single-target plan."""
+    return build_plan_multi(
+        root=root,
+        goal=goal,
+        targets=[Target(path=path, qualname=qualname)],
+        content=content,
+        op=op,
+        run=run,
+        commit=commit,
+        head=head,
+        tail=tail,
+        max_bytes=max_bytes
+    )
+
+
 def build_plan_multi(
     *,
     root: Path,
