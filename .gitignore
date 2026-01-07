@@ -6,3 +6,7 @@ dist/
 build/
 *.egg-info/
 .atlas/
+
+# IDEs
+.idea/
+*.iml
