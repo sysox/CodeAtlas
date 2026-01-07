@@ -1,0 +1,5 @@
+{
+  "file": "tests/test_py_extract.py",
+  "qualname": "test_extract_qualname_source",
+  "summary": "This test function takes a temporary path to create a Python file and asserts that `extract_qualname_source` can correctly extract the source code for both a top-level function and a class method."
+}

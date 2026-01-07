@@ -1,0 +1,5 @@
+{
+  "file": "tests/test_apply.py",
+  "qualname": "test_apply_replace_nested_symbol",
+  "summary": "Given a temporary path, this test function verifies that `apply_change_packet` can correctly replace a nested symbol, such as a method within a class, in a source file according to a specified JSON change packet."
+}

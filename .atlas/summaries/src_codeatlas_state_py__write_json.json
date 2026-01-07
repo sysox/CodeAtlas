@@ -1,0 +1,5 @@
+{
+  "file": "src/codeatlas/state.py",
+  "qualname": "write_json",
+  "summary": "Serializes a given Python object into a pretty-printed, UTF-8 encoded JSON string and writes it to a file at the specified path, creating parent directories if they do not exist."
+}

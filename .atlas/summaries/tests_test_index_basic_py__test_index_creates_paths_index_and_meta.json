@@ -1,0 +1,5 @@
+{
+  "file": "tests/test_index_basic.py",
+  "qualname": "test_index_creates_paths_index_and_meta",
+  "summary": "This test function verifies that after initializing and building a workspace at a given temporary path, a paths index and a nodes map with correct file metadata are successfully created."
+}

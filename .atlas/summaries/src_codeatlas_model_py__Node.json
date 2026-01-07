@@ -1,0 +1,5 @@
+{
+  "file": "src/codeatlas/model.py",
+  "qualname": "Node",
+  "summary": "The `Node` class is a data structure representing an element with an `id`, `type`, `path`, and `children`, which can be serialized to or deserialized from a dictionary using its `to_dict` and `from_dict` methods."
+}

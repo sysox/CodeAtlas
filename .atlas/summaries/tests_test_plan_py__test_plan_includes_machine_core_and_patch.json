@@ -1,0 +1,5 @@
+{
+  "file": "tests/test_plan.py",
+  "qualname": "test_plan_includes_machine_core_and_patch",
+  "summary": "This test function verifies that `build_plan` generates a plan object that correctly includes the `machine_core` and `patches` sections while ensuring old, redundant keys are no longer present."
+}

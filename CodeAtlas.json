@@ -41,7 +41,6 @@
       ],
       "ext": {}
     },
-
     {
       "id": "F_pyproject",
       "type": "file",
@@ -74,13 +73,14 @@
       "children": [],
       "ext": {}
     },
-
     {
       "id": "F_cli",
       "type": "file",
       "path": "src/codeatlas/cli.py",
       "summary": "CLI entrypoint: atlas init/index/resolve (v1). Routes to store/index/resolve modules.",
-      "children": ["B_cli_main"],
+      "children": [
+        "B_cli_main"
+      ],
       "ext": {}
     },
     {
@@ -88,17 +88,19 @@
       "type": "block",
       "path": "src/codeatlas/cli.py",
       "anchor": "main",
-      "summary": "Argparse CLI; dispatch to init/index/resolve; print JSON/text outputs.",
+      "summary": "The main function serves as the command-line interface entry point for the 'atlas' tool, parsing user arguments to dispatch various subcommands like `init`, `index`, and `plan`, and returns an integer exit code.",
       "children": [],
       "ext": {}
     },
-
     {
       "id": "F_store_init",
       "type": "file",
       "path": "src/codeatlas/store_init.py",
       "summary": "Initialize .atlas/ directory layout and default cfg.json; ensure directories exist.",
-      "children": ["B_default_cfg", "B_init_workspace"],
+      "children": [
+        "B_default_cfg",
+        "B_init_workspace"
+      ],
       "ext": {}
     },
     {
@@ -115,17 +117,18 @@
       "type": "block",
       "path": "src/codeatlas/store_init.py",
       "anchor": "init_workspace",
-      "summary": "Create .atlas structure, write cfg.json if missing, create empty state files.",
+      "summary": "Initializes an Atlas workspace at a given root path by creating necessary directories and default configuration files if they are missing, and returns an `AtlasPaths` object for the workspace.",
       "children": [],
       "ext": {}
     },
-
     {
       "id": "F_layout",
       "type": "file",
       "path": "src/codeatlas/layout.py",
       "summary": "Sidecar path manager (AtlasPaths): returns paths for cfg, nodes.jsonl, indexes, blobs, fingerprints.",
-      "children": ["B_atlaspaths"],
+      "children": [
+        "B_atlaspaths"
+      ],
       "ext": {}
     },
     {
@@ -133,17 +136,19 @@
       "type": "block",
       "path": "src/codeatlas/layout.py",
       "anchor": "AtlasPaths",
-      "summary": "Class with properties for canonical+derived paths in .atlas/.",
+      "summary": "The `AtlasPaths` class centralizes the management of file and directory paths for an Atlas project, deriving all locations from a root path and offering a method to ensure the necessary directories exist.",
       "children": [],
       "ext": {}
     },
-
     {
       "id": "F_model",
       "type": "file",
       "path": "src/codeatlas/model.py",
       "summary": "Core Node schema (dict/dataclass), ID conventions, and serialization helpers.",
-      "children": ["B_node", "B_id_helpers"],
+      "children": [
+        "B_node",
+        "B_id_helpers"
+      ],
       "ext": {}
     },
     {
@@ -151,7 +156,7 @@
       "type": "block",
       "path": "src/codeatlas/model.py",
       "anchor": "Node",
-      "summary": "Node fields: id,type,role,path,anchor,summary_auto,children,content_ref,span_hint,meta; to_dict/from_dict.",
+      "summary": "The `Node` class is a data structure representing an element with an `id`, `type`, `path`, and `children`, which can be serialized to or deserialized from a dictionary using its `to_dict` and `from_dict` methods.",
       "children": [],
       "ext": {}
     },
@@ -160,17 +165,18 @@
       "type": "block",
       "path": "src/codeatlas/model.py",
       "anchor": "make_id",
-      "summary": "Deterministic IDs from (role,kind,path,anchor); avoid line numbers.",
+      "summary": "Generates a deterministic reference ID string by combining a `kind`, a `relpath`, and an optional `anchor`.",
       "children": [],
       "ext": {}
     },
-
     {
       "id": "F_scan",
       "type": "file",
       "path": "src/codeatlas/scan.py",
       "summary": "Scan workspace files by include/exclude globs; stable ordering.",
-      "children": ["B_scan_files"],
+      "children": [
+        "B_scan_files"
+      ],
       "ext": {}
     },
     {
@@ -178,17 +184,20 @@
       "type": "block",
       "path": "src/codeatlas/scan.py",
       "anchor": "scan_files",
-      "summary": "Return list of relative paths to index.",
+      "summary": "Recursively scans a directory from a given `root` path, filters files and directories based on `include` and `exclude` glob patterns, and returns a sorted list of relative POSIX paths for the matched files.",
       "children": [],
       "ext": {}
     },
-
     {
       "id": "F_fingerprint",
       "type": "file",
       "path": "src/codeatlas/fingerprint.py",
       "summary": "Compute sha256 fingerprints and diff to enable incremental indexing.",
-      "children": ["B_fp_compute", "B_fp_diff", "B_fp_io"],
+      "children": [
+        "B_fp_compute",
+        "B_fp_diff",
+        "B_fp_io"
+      ],
       "ext": {}
     },
     {
@@ -196,7 +205,7 @@
       "type": "block",
       "path": "src/codeatlas/fingerprint.py",
       "anchor": "fingerprint_file",
-      "summary": "sha256(file_bytes)->hex/ref for change detection.",
+      "summary": "Computes the SHA256 hash for a file at a given `Path` by reading it in chunks and returns the hash as a hexadecimal string.",
       "children": [],
       "ext": {}
     },
@@ -205,7 +214,7 @@
       "type": "block",
       "path": "src/codeatlas/fingerprint.py",
       "anchor": "diff_fingerprints",
-      "summary": "Compute changed/new/deleted sets from old/new maps.",
+      "summary": "Compares two dictionaries of string fingerprints, `old` and `new`, and returns a dictionary categorizing keys into sorted lists of 'added', 'deleted', 'changed', or 'unchanged'.",
       "children": [],
       "ext": {}
     },
@@ -218,13 +227,15 @@
       "children": [],
       "ext": {}
     },
-
     {
       "id": "F_state",
       "type": "file",
       "path": "src/codeatlas/state.py",
       "summary": "Read/write nodes.jsonl and index json files (paths, symbols, headings).",
-      "children": ["B_state_nodes", "B_state_indexes"],
+      "children": [
+        "B_state_nodes",
+        "B_state_indexes"
+      ],
       "ext": {}
     },
     {
@@ -245,13 +256,14 @@
       "children": [],
       "ext": {}
     },
-
     {
       "id": "F_index",
       "type": "file",
       "path": "src/codeatlas/index.py",
       "summary": "Orchestrate indexing: scan, fingerprint diff, build file-level nodes (v1), update path index, persist state.",
-      "children": ["B_index_update"],
+      "children": [
+        "B_index_update"
+      ],
       "ext": {}
     },
     {
@@ -259,17 +271,19 @@
       "type": "block",
       "path": "src/codeatlas/index.py",
       "anchor": "build_or_update",
-      "summary": "Main entry: updates .atlas/tree from workspace; returns stats.",
+      "summary": "Given a `root` path, this function recursively scans the directory to build or update a hierarchical index of files and their internal code symbols, saves the results to JSON files, and returns a dictionary with summary statistics.",
       "children": [],
       "ext": {}
     },
-
     {
       "id": "F_resolve",
       "type": "file",
       "path": "src/codeatlas/resolve.py",
       "summary": "Resolve by node id/path; return content (whole file in v1).",
-      "children": ["B_resolve_by_path", "B_resolve_content"],
+      "children": [
+        "B_resolve_by_path",
+        "B_resolve_content"
+      ],
       "ext": {}
     },
     {
@@ -286,17 +300,18 @@
       "type": "block",
       "path": "src/codeatlas/resolve.py",
       "anchor": "resolve_content",
-      "summary": "Return node content (ptr/file read in v1; later spans/blobs).",
+      "summary": "Given a root path and a `node_id` string formatted as 'ref:path:<relative_path>', the function reads and returns the text content of the specified file.",
       "children": [],
       "ext": {}
     },
-
     {
       "id": "F_ctx",
       "type": "file",
       "path": "src/codeatlas/ctx.py",
       "summary": "Builds context bundles for LLMs (content slicing, capping).",
-      "children": ["B_build_ctx"],
+      "children": [
+        "B_build_ctx"
+      ],
       "ext": {}
     },
     {
@@ -304,17 +319,18 @@
       "type": "block",
       "path": "src/codeatlas/ctx.py",
       "anchor": "build_ctx",
-      "summary": "Main function to assemble context from paths/ids.",
+      "summary": "The `build_ctx` function resolves specified file paths and node IDs within a root directory, optionally fetching, slicing, and capping their content, and returns a JSON-serializable dictionary containing the resulting items and any processing errors.",
       "children": [],
       "ext": {}
     },
-
     {
       "id": "F_diff",
       "type": "file",
       "path": "src/codeatlas/diff.py",
       "summary": "Computes added/changed/deleted files using fingerprints.",
-      "children": ["B_compute_diff"],
+      "children": [
+        "B_compute_diff"
+      ],
       "ext": {}
     },
     {
@@ -322,17 +338,18 @@
       "type": "block",
       "path": "src/codeatlas/diff.py",
       "anchor": "compute_diff",
-      "summary": "Compares old vs new fingerprints to find changes.",
+      "summary": "This function scans a given root directory for files based on configuration, computes the difference between their current and previously stored fingerprints, and returns a dictionary containing the diff and total file count.",
       "children": [],
       "ext": {}
     },
-
     {
       "id": "F_grep",
       "type": "file",
       "path": "src/codeatlas/grep.py",
       "summary": "Regex search for snippets with context.",
-      "children": ["B_grep_snippets"],
+      "children": [
+        "B_grep_snippets"
+      ],
       "ext": {}
     },
     {
@@ -340,17 +357,18 @@
       "type": "block",
       "path": "src/codeatlas/grep.py",
       "anchor": "grep_snippets",
-      "summary": "Search file content for regex pattern.",
+      "summary": "Searches for lines matching a given regular expression pattern within a specified file and returns a dictionary containing snippets of the matches with surrounding context, up to a specified maximum number of hits.",
       "children": [],
       "ext": {}
     },
-
     {
       "id": "F_plan",
       "type": "file",
       "path": "src/codeatlas/plan.py",
       "summary": "Generates modification plans (context + symbols + patch skeleton).",
-      "children": ["B_build_plan_multi"],
+      "children": [
+        "B_build_plan_multi"
+      ],
       "ext": {}
     },
     {
@@ -358,17 +376,18 @@
       "type": "block",
       "path": "src/codeatlas/plan.py",
       "anchor": "build_plan_multi",
-      "summary": "Builds plan for multiple targets.",
+      "summary": "Given a project root, goal, and list of code targets, this function constructs a detailed plan for an LLM by intelligently expanding the context with symbol usages and generating patch skeletons, returning the complete plan as a dictionary.",
       "children": [],
       "ext": {}
     },
-
     {
       "id": "F_patch_skel",
       "type": "file",
       "path": "src/codeatlas/patch_skel.py",
       "summary": "Creates BridgeAI packet skeletons.",
-      "children": ["B_patch_skeleton"],
+      "children": [
+        "B_patch_skeleton"
+      ],
       "ext": {}
     },
     {
@@ -376,17 +395,18 @@
       "type": "block",
       "path": "src/codeatlas/patch_skel.py",
       "anchor": "patch_skeleton",
-      "summary": "Returns a dict representing a patch operation.",
+      "summary": "Generates a dictionary representing a BridgeAI code modification packet, using a file path and an optional qualified symbol name to create a skeleton for either replacing the symbol or the entire file content.",
       "children": [],
       "ext": {}
     },
-
     {
       "id": "F_py_extract",
       "type": "file",
       "path": "src/codeatlas/py_extract.py",
       "summary": "Extracts exact source code for Python symbols.",
-      "children": ["B_extract_qualname"],
+      "children": [
+        "B_extract_qualname"
+      ],
       "ext": {}
     },
     {
@@ -394,17 +414,18 @@
       "type": "block",
       "path": "src/codeatlas/py_extract.py",
       "anchor": "extract_qualname_source",
-      "summary": "Locates and slices source code for a qualname.",
+      "summary": "Given a file path and a qualified symbol name, this function extracts the corresponding source code snippet using stored AST spans and returns a dictionary containing the code, line numbers, and status.",
       "children": [],
       "ext": {}
     },
-
     {
       "id": "F_py_symbols",
       "type": "file",
       "path": "src/codeatlas/py_symbols.py",
       "summary": "AST-based symbol extraction (classes, functions).",
-      "children": ["B_list_symbols"],
+      "children": [
+        "B_list_symbols"
+      ],
       "ext": {}
     },
     {
@@ -412,17 +433,19 @@
       "type": "block",
       "path": "src/codeatlas/py_symbols.py",
       "anchor": "list_python_symbols",
-      "summary": "Parses file and returns list of symbols with line spans.",
+      "summary": "Parses a Python source file from a given `Path` to extract and return a sorted list of dictionaries, each representing a symbol with its qualified name and line span.",
       "children": [],
       "ext": {}
     },
-
     {
       "id": "F_apply",
       "type": "file",
       "path": "src/codeatlas/apply.py",
       "summary": "Applies change packets to the workspace.",
-      "children": ["B_apply_change_packet", "B_run_command"],
+      "children": [
+        "B_apply_change_packet",
+        "B_run_command"
+      ],
       "ext": {}
     },
     {
@@ -430,7 +453,7 @@
       "type": "block",
       "path": "src/codeatlas/apply.py",
       "anchor": "apply_change_packet",
-      "summary": "Validates and executes the operations in a change packet.",
+      "summary": "This function validates and applies a change packet from a JSON file to a workspace root directory, executing code modifications, shell commands, and git operations, and returns a dictionary summarizing the results of each action.",
       "children": [],
       "ext": {}
     },
@@ -439,17 +462,20 @@
       "type": "block",
       "path": "src/codeatlas/apply.py",
       "anchor": "run_command",
-      "summary": "Executes a shell command and captures output.",
+      "summary": "Executes a shell command string in a specified working directory and returns a dictionary containing the command's exit code, stdout, and stderr.",
       "children": [],
       "ext": {}
     },
-
     {
       "id": "F_summarize",
       "type": "file",
       "path": "src/codeatlas/summarize.py",
       "summary": "Generates summaries for symbols and updates the spec.",
-      "children": ["B_generate_summary_prompt", "B_summarize_symbols", "B_update_spec_with_summaries"],
+      "children": [
+        "B_generate_summary_prompt",
+        "B_summarize_symbols",
+        "B_update_spec_with_summaries"
+      ],
       "ext": {}
     },
     {
@@ -457,7 +483,7 @@
       "type": "block",
       "path": "src/codeatlas/summarize.py",
       "anchor": "generate_summary_prompt",
-      "summary": "Creates the prompt text for summarizing a symbol.",
+      "summary": "This function takes a symbol's name and code as strings and returns a formatted string prompt designed to instruct an AI to generate a one-sentence summary of that symbol.",
       "children": [],
       "ext": {}
     },
@@ -475,17 +501,19 @@
       "type": "block",
       "path": "src/codeatlas/summarize.py",
       "anchor": "update_spec_with_summaries",
-      "summary": "Injects generated summaries into CodeAtlas.json.",
+      "summary": "This function reads generated code summaries from a `summaries` directory within a given root `Path`, updates the corresponding entries in `CodeAtlas.json` and `nodes.jsonl`, and returns a dictionary with the operation's status and the number of updated nodes.",
       "children": [],
       "ext": {}
     },
-
     {
       "id": "F_compression",
       "type": "file",
       "path": "src/codeatlas/compression.py",
       "summary": "Generates a compressed 'Machine Core' representation of the project.",
-      "children": ["B_compress_node", "B_build_machine_core"],
+      "children": [
+        "B_compress_node",
+        "B_build_machine_core"
+      ],
       "ext": {}
     },
     {
@@ -493,7 +521,7 @@
       "type": "block",
       "path": "src/codeatlas/compression.py",
       "anchor": "compress_node",
-      "summary": "Compresses a single node into a token-efficient format.",
+      "summary": "The `compress_node` function takes a node dictionary, an optional root path, and an `expand_content` flag to transform the node into a compact dictionary format, potentially replacing its content pointer with the actual source code from the file system.",
       "children": [],
       "ext": {}
     },
@@ -502,17 +530,18 @@
       "type": "block",
       "path": "src/codeatlas/compression.py",
       "anchor": "build_machine_core",
-      "summary": "Generates the compressed 'Machine Core' representation of the project.",
+      "summary": "Generates a compressed 'Machine Core' dictionary representation of a project from a given `root` path, optionally expanding the content of nodes specified in `expand_ids`.",
       "children": [],
       "ext": {}
     },
-
     {
       "id": "F_proposal",
       "type": "file",
       "path": "src/codeatlas/proposal.py",
       "summary": "Builds proposal packets for multi-agent review.",
-      "children": ["B_build_proposal_packet"],
+      "children": [
+        "B_build_proposal_packet"
+      ],
       "ext": {}
     },
     {
@@ -520,17 +549,19 @@
       "type": "block",
       "path": "src/codeatlas/proposal.py",
       "anchor": "build_proposal_packet",
-      "summary": "Combines original bundle and change packet into a reviewable proposal.",
+      "summary": "This function processes a bundle and a change packet file to create a structured proposal dictionary that separates code modifications into primary and dependent changes, including before-and-after code snippets for review.",
       "children": [],
       "ext": {}
     },
-    
     {
       "id": "F_humanize",
       "type": "file",
       "path": "src/codeatlas/humanize.py",
       "summary": "Generates human-readable reports from machine data.",
-      "children": ["B_render_proposal_yaml", "B_render_project_cheatsheet"],
+      "children": [
+        "B_render_proposal_yaml",
+        "B_render_project_cheatsheet"
+      ],
       "ext": {}
     },
     {
@@ -538,7 +569,7 @@
       "type": "block",
       "path": "src/codeatlas/humanize.py",
       "anchor": "render_proposal_yaml",
-      "summary": "Creates a concise YAML report for human review of a proposal.",
+      "summary": "This function converts a dictionary containing causal proposal data into a formatted, human-readable YAML report string.",
       "children": [],
       "ext": {}
     },
@@ -547,17 +578,18 @@
       "type": "block",
       "path": "src/codeatlas/humanize.py",
       "anchor": "render_project_cheatsheet",
-      "summary": "Creates a YAML cheatsheet of the project structure.",
+      "summary": "This function takes a `machine_core` dictionary representing a project's structure and an integer `level` to generate a YAML-formatted string cheatsheet of the project's files and symbols.",
       "children": [],
       "ext": {}
     },
-
     {
       "id": "F_analysis",
       "type": "file",
       "path": "src/codeatlas/analysis.py",
       "summary": "Provides code analysis features like finding usages.",
-      "children": ["B_find_usages_with_grep"],
+      "children": [
+        "B_find_usages_with_grep"
+      ],
       "ext": {}
     },
     {
@@ -565,17 +597,30 @@
       "type": "block",
       "path": "src/codeatlas/analysis.py",
       "anchor": "find_usages_with_grep",
-      "summary": "Finds potential usages of a symbol using grep.",
+      "summary": "Searches for potential usages of a given `symbol` string within a specified `root` directory using `git grep` and returns a list of dictionaries, each detailing the file path, line number, and code of a match.",
       "children": [],
       "ext": {}
     },
-
     {
       "id": "F_tests",
       "type": "file_group",
       "path": "tests/",
       "summary": "Tests for init/index/resolve; deterministic fixtures.",
-      "children": ["T_smoke", "T_init", "T_index_basic", "T_resolve", "T_ctx", "T_diff", "T_grep", "T_plan", "T_plan_multi", "T_patch_skel", "T_py_extract", "T_py_symbols", "T_apply"],
+      "children": [
+        "T_smoke",
+        "T_init",
+        "T_index_basic",
+        "T_resolve",
+        "T_ctx",
+        "T_diff",
+        "T_grep",
+        "T_plan",
+        "T_plan_multi",
+        "T_patch_skel",
+        "T_py_extract",
+        "T_py_symbols",
+        "T_apply"
+      ],
       "ext": {}
     },
     {

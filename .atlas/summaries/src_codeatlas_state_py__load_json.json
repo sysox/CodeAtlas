@@ -1,0 +1,5 @@
+{
+  "file": "src/codeatlas/state.py",
+  "qualname": "load_json",
+  "summary": "Deserializes a JSON file from a given `Path`, returning the parsed data or a specified `default` value if the file does not exist or is empty."
+}

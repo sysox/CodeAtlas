@@ -1,0 +1,5 @@
+{
+  "file": "src/codeatlas/proposal.py",
+  "qualname": "build_proposal_packet",
+  "summary": "This function processes a bundle and a change packet file to create a structured proposal dictionary that separates code modifications into primary and dependent changes, including before-and-after code snippets for review."
+}

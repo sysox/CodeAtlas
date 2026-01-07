@@ -1,0 +1,5 @@
+{
+  "file": "src/codeatlas/humanize.py",
+  "qualname": "_generate_diff",
+  "summary": "Generates and returns a unified diff string by comparing two input strings, `before` and `after`, using a provided `filename`."
+}

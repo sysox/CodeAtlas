@@ -1,0 +1,5 @@
+{
+  "file": "tests/test_ctx.py",
+  "qualname": "test_ctx_returns_items_and_content",
+  "summary": "This test function asserts that `build_ctx` correctly returns a file item including the first two lines of its content when the `content` and `head` parameters are specified."
+}

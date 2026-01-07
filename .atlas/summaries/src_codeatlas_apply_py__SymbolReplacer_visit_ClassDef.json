@@ -1,0 +1,5 @@
+{
+  "file": "src/codeatlas/apply.py",
+  "qualname": "SymbolReplacer.visit_ClassDef",
+  "summary": "Appends the name of a visited `cst.ClassDef` node to the current qualified name stack and returns `True` to continue traversal into the class body."
+}

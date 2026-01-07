@@ -1,0 +1,5 @@
+{
+  "file": "src/codeatlas/compression.py",
+  "qualname": "compress_node",
+  "summary": "The `compress_node` function takes a node dictionary, an optional root path, and an `expand_content` flag to transform the node into a compact dictionary format, potentially replacing its content pointer with the actual source code from the file system."
+}

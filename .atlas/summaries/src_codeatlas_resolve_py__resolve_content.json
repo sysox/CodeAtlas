@@ -1,0 +1,5 @@
+{
+  "file": "src/codeatlas/resolve.py",
+  "qualname": "resolve_content",
+  "summary": "Given a root path and a `node_id` string formatted as 'ref:path:<relative_path>', the function reads and returns the text content of the specified file."
+}

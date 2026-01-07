@@ -1,0 +1,5 @@
+{
+  "file": "src/codeatlas/plan.py",
+  "qualname": "build_plan_multi",
+  "summary": "Given a project root, goal, and list of code targets, this function constructs a detailed plan for an LLM by intelligently expanding the context with symbol usages and generating patch skeletons, returning the complete plan as a dictionary."
+}

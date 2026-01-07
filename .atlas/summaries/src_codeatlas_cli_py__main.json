@@ -1,0 +1,5 @@
+{
+  "file": "src/codeatlas/cli.py",
+  "qualname": "main",
+  "summary": "The main function serves as the command-line interface entry point for the 'atlas' tool, parsing user arguments to dispatch various subcommands like `init`, `index`, and `plan`, and returns an integer exit code."
+}

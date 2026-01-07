@@ -1,0 +1,5 @@
+{
+  "file": "tests/test_init.py",
+  "qualname": "test_init_creates_atlas_layout",
+  "summary": "This test function verifies that calling `init_workspace` with a temporary path successfully creates the expected Atlas project directory structure and essential files."
+}

@@ -1,0 +1,5 @@
+{
+  "file": "src/codeatlas/py_symbols.py",
+  "qualname": "_Visitor",
+  "summary": "This `ast.NodeVisitor` subclass traverses a Python Abstract Syntax Tree to identify class, function, and method definitions, collecting their qualified names, types, and line numbers into an output list."
+}

@@ -1,0 +1,5 @@
+{
+  "file": "src/codeatlas/py_symbols.py",
+  "qualname": "list_python_symbols",
+  "summary": "Parses a Python source file from a given `Path` to extract and return a sorted list of dictionaries, each representing a symbol with its qualified name and line span."
+}

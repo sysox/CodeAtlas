@@ -1,0 +1,5 @@
+{
+  "file": "src/codeatlas/grep.py",
+  "qualname": "grep_snippets",
+  "summary": "Searches for lines matching a given regular expression pattern within a specified file and returns a dictionary containing snippets of the matches with surrounding context, up to a specified maximum number of hits."
+}

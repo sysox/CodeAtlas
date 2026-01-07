@@ -1,0 +1,5 @@
+{
+  "file": "src/codeatlas/apply.py",
+  "qualname": "SymbolReplacer.visit_FunctionDef",
+  "summary": "Appends the function's name to the current qualified name stack when visiting a `cst.FunctionDef` node and returns `True` to continue the CST traversal."
+}

@@ -1,0 +1,5 @@
+{
+  "file": "src/codeatlas/layout.py",
+  "qualname": "AtlasPaths.paths_index_path",
+  "summary": "Returns a `Path` object for the `paths.json` file by joining the filename to the `index_dir` attribute."
+}

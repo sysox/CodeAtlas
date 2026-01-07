@@ -1,0 +1,5 @@
+{
+  "file": "src/codeatlas/state.py",
+  "qualname": "write_nodes_jsonl",
+  "summary": "Serializes an iterable of dictionaries to a JSON Lines (JSONL) file at the specified path, creating parent directories if they don't exist."
+}

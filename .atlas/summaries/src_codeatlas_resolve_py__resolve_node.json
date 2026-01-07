@@ -1,0 +1,5 @@
+{
+  "file": "src/codeatlas/resolve.py",
+  "qualname": "resolve_node",
+  "summary": "Retrieves a dictionary of node data for a given `node_id` by loading a nodes map from a specified `root` path, returning `None` if the node is not found."
+}

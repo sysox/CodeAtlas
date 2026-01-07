@@ -1,0 +1,5 @@
+{
+  "file": "src/codeatlas/humanize.py",
+  "qualname": "_render_changes_to_yaml",
+  "summary": "This helper function processes a list of dictionaries representing code changes, formats them into a human-readable YAML structure including diffs, and appends the resulting lines to an input list."
+}

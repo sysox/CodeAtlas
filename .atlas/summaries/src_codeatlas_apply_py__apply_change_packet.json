@@ -1,0 +1,5 @@
+{
+  "file": "src/codeatlas/apply.py",
+  "qualname": "apply_change_packet",
+  "summary": "This function validates and applies a change packet from a JSON file to a workspace root directory, executing code modifications, shell commands, and git operations, and returns a dictionary summarizing the results of each action."
+}

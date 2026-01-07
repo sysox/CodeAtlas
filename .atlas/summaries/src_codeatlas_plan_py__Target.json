@@ -1,0 +1,5 @@
+{
+  "file": "src/codeatlas/plan.py",
+  "qualname": "Target",
+  "summary": "Represents a target entity defined by a string `path` and an optional qualified name `qualname`."
+}

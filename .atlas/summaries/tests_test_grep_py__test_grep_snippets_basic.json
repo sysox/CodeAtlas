@@ -1,0 +1,5 @@
+{
+  "file": "tests/test_grep.py",
+  "qualname": "test_grep_snippets_basic",
+  "summary": "This test function verifies the basic functionality of `grep_snippets` by searching for a pattern in a temporary file and asserting that the returned match correctly identifies the line number and includes the pattern in the snippet."
+}

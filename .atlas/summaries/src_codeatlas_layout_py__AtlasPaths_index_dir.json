@@ -1,0 +1,5 @@
+{
+  "file": "src/codeatlas/layout.py",
+  "qualname": "AtlasPaths.index_dir",
+  "summary": "Returns the path to the 'index' directory, which is a subdirectory of the `tree_dir`."
+}

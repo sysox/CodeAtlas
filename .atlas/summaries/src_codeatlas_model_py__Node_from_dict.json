@@ -1,0 +1,5 @@
+{
+  "file": "src/codeatlas/model.py",
+  "qualname": "Node.from_dict",
+  "summary": "Creates and returns a `Node` instance by extracting its attributes from a given dictionary `d`."
+}

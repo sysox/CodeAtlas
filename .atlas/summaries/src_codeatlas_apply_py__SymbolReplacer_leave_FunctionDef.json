@@ -1,0 +1,5 @@
+{
+  "file": "src/codeatlas/apply.py",
+  "qualname": "SymbolReplacer.leave_FunctionDef",
+  "summary": "When leaving a `cst.FunctionDef` node during a tree traversal, this method pops the function's qualified name from its internal stack and delegates the final transformation of the node to the `_leave_definable_node` method."
+}

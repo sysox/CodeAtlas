@@ -1,0 +1,5 @@
+{
+  "file": "src/codeatlas/plan.py",
+  "qualname": "render_prompt_text",
+  "summary": "The `render_prompt_text` function takes a dictionary `bundle` and renders its contents\u2014including a goal, project context, and a patch skeleton\u2014into a formatted string prompt for an LLM."
+}

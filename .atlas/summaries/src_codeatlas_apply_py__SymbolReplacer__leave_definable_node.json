@@ -1,0 +1,5 @@
+{
+  "file": "src/codeatlas/apply.py",
+  "qualname": "SymbolReplacer._leave_definable_node",
+  "summary": "This method compares the qualified name of the current CST node with a target name and, if they match, replaces the node with a new one parsed from a code string, otherwise returning the node unmodified."
+}

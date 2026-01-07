@@ -1,0 +1,5 @@
+{
+  "file": "src/codeatlas/layout.py",
+  "qualname": "AtlasPaths",
+  "summary": "The `AtlasPaths` class centralizes the management of file and directory paths for an Atlas project, deriving all locations from a root path and offering a method to ensure the necessary directories exist."
+}

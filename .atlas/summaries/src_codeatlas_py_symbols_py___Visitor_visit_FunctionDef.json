@@ -1,0 +1,5 @@
+{
+  "file": "src/codeatlas/py_symbols.py",
+  "qualname": "_Visitor.visit_FunctionDef",
+  "summary": "Delegates the processing of a given `ast.FunctionDef` node to the internal `_visit_fn` method."
+}

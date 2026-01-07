@@ -1,0 +1,5 @@
+{
+  "file": "src/codeatlas/layout.py",
+  "qualname": "AtlasPaths.cfg_path",
+  "summary": "Returns a `Path` object for the 'cfg.json' file located within the `atlas_dir` directory."
+}

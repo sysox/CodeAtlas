@@ -1,0 +1,5 @@
+{
+  "file": "src/codeatlas/index.py",
+  "qualname": "_kind_from_path",
+  "summary": "Determines and returns a file type identifier string such as 'py', 'md', or 'other' based on the file extension of the input relative path string."
+}

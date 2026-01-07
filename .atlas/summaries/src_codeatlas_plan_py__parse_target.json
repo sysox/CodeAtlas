@@ -1,0 +1,5 @@
+{
+  "file": "src/codeatlas/plan.py",
+  "qualname": "parse_target",
+  "summary": "Parses a target string `s` into a `Target` object by splitting it into a `path` and an optional `qualname` using '::' as a delimiter."
+}

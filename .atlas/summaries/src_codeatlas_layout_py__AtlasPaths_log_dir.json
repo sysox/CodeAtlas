@@ -1,0 +1,5 @@
+{
+  "file": "src/codeatlas/layout.py",
+  "qualname": "AtlasPaths.log_dir",
+  "summary": "Returns the `pathlib.Path` object for the 'log' subdirectory within the atlas directory."
+}

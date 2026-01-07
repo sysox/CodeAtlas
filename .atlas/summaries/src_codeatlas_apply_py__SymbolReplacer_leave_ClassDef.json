@@ -1,0 +1,5 @@
+{
+  "file": "src/codeatlas/apply.py",
+  "qualname": "SymbolReplacer.leave_ClassDef",
+  "summary": "Pops the current class's qualified name from an internal state stack and returns the updated class definition node by delegating to a common handler."
+}

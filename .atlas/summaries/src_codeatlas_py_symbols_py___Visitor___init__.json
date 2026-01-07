@@ -1,0 +1,5 @@
+{
+  "file": "src/codeatlas/py_symbols.py",
+  "qualname": "_Visitor.__init__",
+  "summary": "Initializes a `_Visitor` instance with an empty list attribute `stack` for strings and an empty list attribute `out` for `Sym` objects."
+}
