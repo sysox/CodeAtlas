@@ -1,5 +1,5 @@
 {
   "file": "src/codeatlas/fingerprint.py",
   "qualname": "build_fingerprints",
-  "summary": "Computes and returns a dictionary mapping each provided relative file path to its unique fingerprint, calculated relative to a given root directory."
+  "summary": "Generates a dictionary of file fingerprints for given relative paths using a specified root directory."
 }

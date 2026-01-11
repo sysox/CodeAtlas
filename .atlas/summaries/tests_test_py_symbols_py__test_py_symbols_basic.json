@@ -1,5 +1,5 @@
 {
   "file": "tests/test_py_symbols.py",
   "qualname": "test_py_symbols_basic",
-  "summary": "Verifies that the `list_python_symbols` function correctly identifies the qualified names of a class, a method, and a standalone function within a temporary Python file."
+  "summary": "This function tests the list_python_symbols function by creating a temporary Python file with a class and a function, and asserts that their qualified names are correctly identified."
 }

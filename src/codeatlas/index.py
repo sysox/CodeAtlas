@@ -8,7 +8,8 @@ from codeatlas.model import Node, make_id
 from codeatlas.scan import scan_files
 from codeatlas.fingerprint import build_fingerprints, diff_fingerprints
 from codeatlas.state import load_json, write_json, write_nodes_jsonl
-from codeatlas.py_symbols import list_python_symbols
+from codeatlas.py_symbols import parse_symbols
+from codeatlas.py_enrich import enrich_symbol
 
 
 def _kind_from_path(relpath: str) -> str:
@@ -72,10 +73,24 @@ def build_or_update(root: Path) -> Dict[str, Any]:
 
         if _kind_from_path(rp) == "py":
             try:
-                py_symbols = list_python_symbols(p)
-                for sym in py_symbols:
-                    qualname = sym["qualname"]
+                # Use parse_symbols to get AST nodes
+                syms = parse_symbols(p)
+                for sym in syms:
+                    qualname = sym.qualname
                     symbol_id = make_id("symbol", rp, qualname)
+                    
+                    # Enrich the symbol with signature, calls, etc.
+                    rich_meta = {}
+                    if sym.ast_node:
+                        rich_meta = enrich_symbol(sym.ast_node)
+
+                    # Merge basic meta with rich meta
+                    node_meta = {
+                        "kind": sym.kind,
+                        "start_line": sym.start_line,
+                        "end_line": sym.end_line,
+                        **rich_meta
+                    }
                     
                     symbol_node = Node(
                         id=symbol_id,
@@ -83,15 +98,11 @@ def build_or_update(root: Path) -> Dict[str, Any]:
                         path=rp,
                         anchor=qualname,
                         children=[],
-                        meta={
-                            "kind": sym["kind"],
-                            "start_line": sym["start_line"],
-                            "end_line": sym["end_line"],
-                        }
+                        meta=node_meta
                     )
                     all_nodes.append(symbol_node)
-                    # Store the symbol data along with its path for the linking pass
-                    symbols_to_process.append({**sym, "path": rp})
+                    # Store for linking
+                    symbols_to_process.append({"qualname": qualname, "path": rp})
             except Exception as e:
                 print(f"Warning: Could not parse symbols in {rp}: {e}")
 

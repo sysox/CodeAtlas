@@ -1,5 +1,5 @@
 {
   "file": "src/codeatlas/fingerprint.py",
   "qualname": "diff_fingerprints",
-  "summary": "Compares two dictionaries of string fingerprints, `old` and `new`, and returns a dictionary categorizing keys into sorted lists of 'added', 'deleted', 'changed', or 'unchanged'."
+  "summary": "Compares two dictionaries representing 'fingerprints' and returns a dictionary detailing keys added, deleted, changed, or unchanged between them."
 }

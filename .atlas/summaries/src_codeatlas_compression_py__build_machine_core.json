@@ -1,5 +1,5 @@
 {
   "file": "src/codeatlas/compression.py",
   "qualname": "build_machine_core",
-  "summary": "Generates a compressed 'Machine Core' dictionary representation of a project from a given `root` path, optionally expanding the content of nodes specified in `expand_ids`."
+  "summary": "Generates a compressed 'Machine Core' representation of a project by processing nodes and optionally expanding specific node IDs from a given root path, returning a dictionary with versioning and node data."
 }

@@ -1,5 +1,5 @@
 {
   "file": "tests/test_diff.py",
   "qualname": "test_diff_added_changed_deleted",
-  "summary": "This test function verifies that `compute_diff` correctly identifies added, changed, and deleted files by performing file system operations within a temporary directory and asserting the results."
+  "summary": "Tests the 'compute_diff' function by verifying its ability to detect added, changed, and deleted files in a temporary directory."
 }

@@ -1,5 +1,5 @@
 {
   "file": "tests/test_plan_multi.py",
   "qualname": "test_plan_multi_two_targets",
-  "summary": "This test function verifies that `build_plan_multi` can correctly create a plan with appropriate `replace_symbol` and `replace_file` patch operations when given two targets: one a specific Python symbol and the other an entire file."
+  "summary": "Tests the multi-target build plan functionality by checking that specified Python files and README are processed correctly and verifying the outputs and transformations including symbol replacement and patch operations."
 }

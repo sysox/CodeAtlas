@@ -1,5 +1,5 @@
 {
   "file": "src/codeatlas/layout.py",
   "qualname": "AtlasPaths.blobs_dir",
-  "summary": "Returns a `Path` object representing the 'blobs' directory located within the `tree_dir`."
+  "summary": "Returns the path to the 'blobs' directory by appending 'blobs' to the 'tree_dir' path."
 }

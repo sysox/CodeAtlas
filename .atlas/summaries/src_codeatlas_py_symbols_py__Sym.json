@@ -1,5 +1,5 @@
 {
   "file": "src/codeatlas/py_symbols.py",
   "qualname": "Sym",
-  "summary": "The `Sym` class is a data structure that represents a code symbol by storing its qualified name, kind, and start/end line numbers, and provides a method to convert this information into a dictionary."
+  "summary": "The Sym class represents a Python code symbol with attributes for its name, type, and position in the code, and provides a method to return this information as a dictionary."
 }

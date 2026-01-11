@@ -1,5 +1,5 @@
 {
   "file": "src/codeatlas/humanize.py",
   "qualname": "render_project_cheatsheet",
-  "summary": "This function takes a `machine_core` dictionary representing a project's structure and an integer `level` to generate a YAML-formatted string cheatsheet of the project's files and symbols."
+  "summary": "Generates a YAML cheatsheet detailing the project structure from a hierarchical node representation, outlining files and, at higher levels, their classes and functions, returning a formatted string."
 }

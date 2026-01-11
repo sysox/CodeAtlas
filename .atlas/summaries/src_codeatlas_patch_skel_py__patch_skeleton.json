@@ -1,5 +1,5 @@
 {
   "file": "src/codeatlas/patch_skel.py",
   "qualname": "patch_skeleton",
-  "summary": "Generates a dictionary representing a BridgeAI code modification packet, using a file path and an optional qualified symbol name to create a skeleton for either replacing the symbol or the entire file content."
+  "summary": "Generates a packet skeleton for a BridgeAI operation to modify code, taking inputs such as file path, optional qualified name, operation type, test commands, and commit message, and outputs a dictionary detailing the operation and associated metadata."
 }

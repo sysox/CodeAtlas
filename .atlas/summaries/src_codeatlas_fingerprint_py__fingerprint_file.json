@@ -1,5 +1,5 @@
 {
   "file": "src/codeatlas/fingerprint.py",
   "qualname": "fingerprint_file",
-  "summary": "Computes the SHA256 hash for a file at a given `Path` by reading it in chunks and returns the hash as a hexadecimal string."
+  "summary": "Generates a SHA-256 hash fingerprint for a file given its path, returning the hash as a hexadecimal string."
 }

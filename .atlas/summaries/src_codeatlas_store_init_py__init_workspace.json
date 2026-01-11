@@ -1,5 +1,5 @@
 {
   "file": "src/codeatlas/store_init.py",
   "qualname": "init_workspace",
-  "summary": "Initializes an Atlas workspace at a given root path by creating necessary directories and default configuration files if they are missing, and returns an `AtlasPaths` object for the workspace."
+  "summary": "Initializes a workspace by creating required directories and default configuration files in a specified root path, returning an AtlasPaths object reflecting the new setup."
 }

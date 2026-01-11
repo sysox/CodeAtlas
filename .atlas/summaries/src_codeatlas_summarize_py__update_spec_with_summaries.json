@@ -1,5 +1,5 @@
 {
   "file": "src/codeatlas/summarize.py",
   "qualname": "update_spec_with_summaries",
-  "summary": "This function reads generated code summaries from a `summaries` directory within a given root `Path`, updates the corresponding entries in `CodeAtlas.json` and `nodes.jsonl`, and returns a dictionary with the operation's status and the number of updated nodes."
+  "summary": "Updates the CodeAtlas.json and nodes.jsonl files with summaries from the summaries directory, using the specified root path as input and returning a dictionary indicating success and number of updates made."
 }

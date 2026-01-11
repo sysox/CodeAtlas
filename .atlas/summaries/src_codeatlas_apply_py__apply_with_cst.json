@@ -1,5 +1,5 @@
 {
   "file": "src/codeatlas/apply.py",
   "qualname": "apply_with_cst",
-  "summary": "This function uses LibCST to replace a symbol, identified by its qualified name, within a given source code string with new code, returning a tuple containing the potentially modified source code and a boolean indicating success."
+  "summary": "Replaces a specified symbol in source code using LibCST and returns the modified code and a success flag."
 }

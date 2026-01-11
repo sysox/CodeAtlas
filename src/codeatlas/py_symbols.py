@@ -3,7 +3,7 @@ from __future__ import annotations
 import ast
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 
 @dataclass
@@ -12,6 +12,7 @@ class Sym:
     kind: str  # class|function|method
     start_line: int
     end_line: int
+    ast_node: Optional[ast.AST] = None # Added for enrichment
 
     def to_dict(self) -> Dict[str, Any]:
         return {
@@ -30,7 +31,7 @@ class _Visitor(ast.NodeVisitor):
     def visit_ClassDef(self, node: ast.ClassDef) -> Any:
         name = node.name
         qn = ".".join(self.stack + [name]) if self.stack else name
-        self.out.append(Sym(qn, "class", getattr(node, "lineno", 1), getattr(node, "end_lineno", getattr(node, "lineno", 1))))
+        self.out.append(Sym(qn, "class", getattr(node, "lineno", 1), getattr(node, "end_lineno", getattr(node, "lineno", 1)), node))
         self.stack.append(name)
         self.generic_visit(node)
         self.stack.pop()
@@ -45,17 +46,25 @@ class _Visitor(ast.NodeVisitor):
         name = getattr(node, "name", "<fn>")
         qn = ".".join(self.stack + [name]) if self.stack else name
         kind = "method" if self.stack else "function"
-        self.out.append(Sym(qn, kind, getattr(node, "lineno", 1), getattr(node, "end_lineno", getattr(node, "lineno", 1))))
+        self.out.append(Sym(qn, kind, getattr(node, "lineno", 1), getattr(node, "end_lineno", getattr(node, "lineno", 1)), node))
         self.stack.append(name)
         self.generic_visit(node)
         self.stack.pop()
 
 
 def list_python_symbols(path: Path) -> List[Dict[str, Any]]:
-    """Return symbols (qualnames + line spans). Requires Python 3.10+ for end_lineno."""
+    """Return symbols (qualnames + line spans). Legacy wrapper."""
+    syms = parse_symbols(path)
+    return [s.to_dict() for s in syms]
+
+def parse_symbols(path: Path) -> List[Sym]:
+    """Return Sym objects with AST nodes attached."""
     src = path.read_text(encoding="utf-8", errors="replace")
-    tree = ast.parse(src)
+    try:
+        tree = ast.parse(src)
+    except SyntaxError:
+        return []
     v = _Visitor()
     v.visit(tree)
     v.out.sort(key=lambda s: (s.start_line, s.qualname))
-    return [s.to_dict() for s in v.out]
+    return v.out

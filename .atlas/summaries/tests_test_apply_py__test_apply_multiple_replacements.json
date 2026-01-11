@@ -1,5 +1,5 @@
 {
   "file": "tests/test_apply.py",
   "qualname": "test_apply_multiple_replacements",
-  "summary": "This test function verifies that `apply_change_packet` can successfully process a JSON packet containing multiple `replace_symbol` operations to modify two different functions within the same source file."
+  "summary": "Tests the 'apply_change_packet' function by replacing multiple functions in a Python file with new code snippets, ensuring successful application and correct file content updates, taking 'tmp_path' as input and producing verification results."
 }

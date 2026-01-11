@@ -1,5 +1,5 @@
 {
   "file": "src/codeatlas/layout.py",
   "qualname": "AtlasPaths.ensure_dirs",
-  "summary": "Ensures that the atlas, tree, index, blobs, and log directories exist by creating them on the filesystem if they are missing, taking no arguments and returning nothing."
+  "summary": "Creates the necessary directories if they do not exist for atlas, tree, index, blobs, and log paths within the AtlasPaths class."
 }

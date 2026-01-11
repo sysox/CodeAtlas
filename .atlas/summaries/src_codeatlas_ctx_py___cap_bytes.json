@@ -1,5 +1,5 @@
 {
   "file": "src/codeatlas/ctx.py",
   "qualname": "_cap_bytes",
-  "summary": "Truncates a string to a specified maximum number of bytes, handling UTF-8 encoding safely, and returns the potentially shortened string along with a boolean indicating if truncation occurred."
+  "summary": "The _cap_bytes function truncates a UTF-8 encoded string to a specified maximum byte length, ensuring valid encoding and indicating if truncation occurred."
 }

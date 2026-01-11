@@ -1,5 +1,5 @@
 {
   "file": "src/codeatlas/analysis.py",
   "qualname": "find_usages_with_grep",
-  "summary": "Searches for potential usages of a given `symbol` string within a specified `root` directory using `git grep` and returns a list of dictionaries, each detailing the file path, line number, and code of a match."
+  "summary": "The function 'find_usages_with_grep' searches for occurrences of a specified symbol in a given directory using grep and returns a list of dictionaries, each containing the file path, line number, and code line where the symbol is found."
 }

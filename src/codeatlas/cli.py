@@ -23,6 +23,8 @@ from codeatlas.summarize import summarize_symbols, update_spec_with_summaries
 from codeatlas.compression import build_machine_core
 from codeatlas.proposal import build_proposal_packet
 from codeatlas.humanize import render_proposal_yaml, render_project_cheatsheet
+from codeatlas.skeleton import render_llm_skeleton
+from codeatlas.overview import render_human_overview
 
 
 def main(argv=None) -> int:
@@ -123,6 +125,12 @@ def main(argv=None) -> int:
     sp_cheat = sub.add_parser("cheatsheet", help="Generate a human-readable project cheatsheet")
     sp_cheat.add_argument("--root", default=".", help="Workspace root")
     sp_cheat.add_argument("--level", type=int, default=1, help="Detail level (1=Files, 2=Symbols)")
+
+    sp_skel = sub.add_parser("skeleton", help="Generate a dense LLM skeleton")
+    sp_skel.add_argument("--root", default=".", help="Workspace root")
+
+    sp_over = sub.add_parser("overview", help="Generate a human-readable overview")
+    sp_over.add_argument("--root", default=".", help="Workspace root")
 
 
     args = p.parse_args(argv)
@@ -357,6 +365,20 @@ def main(argv=None) -> int:
         core = build_machine_core(root)
         sheet = render_project_cheatsheet(core, level=args.level)
         print(sheet)
+        return 0
+
+    if args.cmd == "skeleton":
+        init_workspace(root)
+        core = build_machine_core(root)
+        skel = render_llm_skeleton(core)
+        print(skel)
+        return 0
+
+    if args.cmd == "overview":
+        init_workspace(root)
+        core = build_machine_core(root)
+        over = render_human_overview(core)
+        print(over)
         return 0
 
     return 0

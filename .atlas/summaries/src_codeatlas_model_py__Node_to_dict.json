@@ -1,5 +1,5 @@
 {
   "file": "src/codeatlas/model.py",
   "qualname": "Node.to_dict",
-  "summary": "Serializes the Node object into a dictionary containing its attributes, including id, type, path, children, and optional anchor, summary, and meta information."
+  "summary": "Converts a Node object into a dictionary representation, including its id, type, path, children, and optionally anchor, summary, and meta attributes."
 }

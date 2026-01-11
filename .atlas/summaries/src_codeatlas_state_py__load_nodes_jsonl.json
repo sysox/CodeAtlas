@@ -1,5 +1,5 @@
 {
   "file": "src/codeatlas/state.py",
   "qualname": "load_nodes_jsonl",
-  "summary": "Parses a JSON Lines (JSONL) file from a given path, returning a list of dictionaries, with each dictionary corresponding to a line in the file."
+  "summary": "Reads a JSONL file from the given Path object and returns a list of dictionaries representing each JSON line."
 }

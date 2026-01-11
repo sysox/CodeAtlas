@@ -1,5 +1,5 @@
 {
   "file": "src/codeatlas/model.py",
   "qualname": "make_id",
-  "summary": "Generates a deterministic reference ID string by combining a `kind`, a `relpath`, and an optional `anchor`."
+  "summary": "Generates a deterministic ID string based on kind, relative path, and an optional anchor."
 }

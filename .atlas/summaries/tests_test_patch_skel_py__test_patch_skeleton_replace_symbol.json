@@ -1,5 +1,5 @@
 {
   "file": "tests/test_patch_skel.py",
   "qualname": "test_patch_skeleton_replace_symbol",
-  "summary": "This test function verifies that calling `patch_skeleton` with a path and a qualified name correctly generates a patch packet with a 'replace_symbol' operation."
+  "summary": "Tests the patch_skeleton function to ensure it correctly specifies a replace_symbol operation for the method 'A.m' in the file 'x.py'."
 }

@@ -1,5 +1,5 @@
 {
   "file": "src/codeatlas/plan.py",
   "qualname": "build_plan",
-  "summary": "Constructs a dictionary for a backward-compatible, single-target plan by packaging the provided path and qualname into a `Target` object and delegating to `build_plan_multi` with the given operational parameters."
+  "summary": "Creates a backward-compatible execution plan for a single target using provided parameters for file path, operation, and optional execution details, outputting a dictionary of plan specifications."
 }

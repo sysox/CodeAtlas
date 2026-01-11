@@ -1,5 +1,5 @@
 {
   "file": "src/codeatlas/py_symbols.py",
   "qualname": "Sym.to_dict",
-  "summary": "Returns a dictionary representation of the `Sym` object, including its qualified name, kind, and start/end line numbers."
+  "summary": "Converts a Sym object into a dictionary containing its qualified name, kind, start line, and end line."
 }

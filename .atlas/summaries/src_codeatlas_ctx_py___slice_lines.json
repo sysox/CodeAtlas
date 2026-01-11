@@ -1,5 +1,5 @@
 {
   "file": "src/codeatlas/ctx.py",
   "qualname": "_slice_lines",
-  "summary": "This function slices a multi-line string `s` to include a specified number of `head` and/or `tail` lines, returning the resulting string and a boolean flag indicating if truncation occurred."
+  "summary": "Slices a string into head and tail segments based on line count and returns the concatenated result with an ellipsis in between, along with a boolean indicating if any lines were omitted."
 }

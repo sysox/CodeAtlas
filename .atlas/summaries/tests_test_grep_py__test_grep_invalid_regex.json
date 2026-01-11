@@ -1,5 +1,5 @@
 {
   "file": "tests/test_grep.py",
   "qualname": "test_grep_invalid_regex",
-  "summary": "This test function verifies that `grep_snippets` correctly handles an invalid regular expression by asserting that the 'ok' key in the returned dictionary is `False`."
+  "summary": "Tests the behavior of grep_snippets function when given an invalid regular expression pattern, verifying it returns an 'ok': False result."
 }

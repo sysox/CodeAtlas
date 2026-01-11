@@ -1,5 +1,5 @@
 {
   "file": "src/codeatlas/scan.py",
   "qualname": "_match_any",
-  "summary": "Determines if a given POSIX path string matches any of the shell-style wildcard patterns in an iterable, returning a boolean result."
+  "summary": "Determines if a given POSIX path matches any pattern in an iterable using Unix shell-style wildcards, returning a boolean result."
 }

@@ -1,5 +1,5 @@
 {
   "file": "src/codeatlas/humanize.py",
   "qualname": "render_proposal_yaml",
-  "summary": "This function converts a dictionary containing causal proposal data into a formatted, human-readable YAML report string."
+  "summary": "Generates a human-readable YAML report summarizing the goal, file impact, and changes from a causal proposal packet, taking a dictionary as input and outputting a string."
 }

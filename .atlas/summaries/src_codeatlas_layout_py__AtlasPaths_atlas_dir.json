@@ -1,5 +1,5 @@
 {
   "file": "src/codeatlas/layout.py",
   "qualname": "AtlasPaths.atlas_dir",
-  "summary": "Returns a `Path` object representing the `.atlas` directory located within the instance's root directory."
+  "summary": "Returns the directory path for '.atlas' subdirectory by appending it to the root path."
 }

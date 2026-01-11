@@ -1,5 +1,5 @@
 {
   "file": "src/codeatlas/cli.py",
   "qualname": "main",
-  "summary": "The main function serves as the command-line interface entry point for the 'atlas' tool, parsing user arguments to dispatch various subcommands like `init`, `index`, and `plan`, and returns an integer exit code."
+  "summary": "The `main` function is a command-line interface handler for a tool named 'atlas', using argparse to parse various subcommands that perform actions like initializing a workspace, indexing, diffing, grepping code snippets, resolving nodes, exporting data, and generating project overviews, returning an exit status code based on execution success or failure."
 }

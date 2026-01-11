@@ -1,5 +1,5 @@
 {
   "file": "tests/test_ctx.py",
   "qualname": "test_ctx_max_bytes_truncates",
-  "summary": "This test function verifies that `build_ctx` correctly truncates file content and sets the `truncated` flag to `True` when the content size exceeds the `max_bytes` limit."
+  "summary": "Tests that the build_ctx function correctly truncates file content exceeding the specified max_bytes parameter."
 }

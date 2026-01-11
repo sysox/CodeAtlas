@@ -88,7 +88,7 @@
       "type": "block",
       "path": "src/codeatlas/cli.py",
       "anchor": "main",
-      "summary": "Defines the main entry point function that parses command-line arguments for various workspace management, code analysis, transformation, and reporting commands, executing the corresponding operations and returning an integer status code.",
+      "summary": "The `main` function is a command-line interface handler for a tool named 'atlas', using argparse to parse various subcommands that perform actions like initializing a workspace, indexing, diffing, grepping code snippets, resolving nodes, exporting data, and generating project overviews, returning an exit status code based on execution success or failure.",
       "children": [],
       "ext": {}
     },
@@ -117,7 +117,7 @@
       "type": "block",
       "path": "src/codeatlas/store_init.py",
       "anchor": "init_workspace",
-      "summary": "Initializes the workspace at the specified root directory by creating necessary directory structure and default configuration files, returning an AtlasPaths object.",
+      "summary": "Initializes a workspace by creating required directories and default configuration files in a specified root path, returning an AtlasPaths object reflecting the new setup.",
       "children": [],
       "ext": {}
     },
@@ -136,7 +136,7 @@
       "type": "block",
       "path": "src/codeatlas/layout.py",
       "anchor": "AtlasPaths",
-      "summary": "The AtlasPaths class manages and provides paths to various directories and files within a project rooted at 'root', facilitating directory creation and access to configuration, data, and log file locations.",
+      "summary": "The AtlasPaths class represents a directory structure for an 'atlas' with properties to access various subdirectories and files, and a method to ensure those directories exist, taking a root Path as input and outputting corresponding Path objects for the files and directories.",
       "children": [],
       "ext": {}
     },
@@ -156,7 +156,7 @@
       "type": "block",
       "path": "src/codeatlas/model.py",
       "anchor": "Node",
-      "summary": "The Node class models a hierarchical element with identifiers, type, path, optional anchor, summary, children, and metadata, and provides methods for serializing to and deserializing from a dictionary.",
+      "summary": "The Node class represents a tree-like structure element with attributes like id, type, path, and optional anchor, summary, children, and metadata, providing methods to convert between Node instances and their dictionary representations.",
       "children": [],
       "ext": {}
     },
@@ -165,7 +165,7 @@
       "type": "block",
       "path": "src/codeatlas/model.py",
       "anchor": "make_id",
-      "summary": "Generates a deterministic string ID based on the provided kind, relative path, and optional anchor, distinguishing between file-level IDs and more specific references.",
+      "summary": "Generates a deterministic ID string based on kind, relative path, and an optional anchor.",
       "children": [],
       "ext": {}
     },
@@ -184,7 +184,7 @@
       "type": "block",
       "path": "src/codeatlas/scan.py",
       "anchor": "scan_files",
-      "summary": "The scan_files function recursively traverses a directory tree starting at 'root', filtering files based on 'include' and 'exclude' patterns, and returns a sorted list of relative POSIX paths to the matching files.",
+      "summary": "The function 'scan_files' returns a stable sorted list of relative POSIX paths for files within a specified root directory that match inclusion patterns and do not match exclusion patterns.",
       "children": [],
       "ext": {}
     },
@@ -205,7 +205,7 @@
       "type": "block",
       "path": "src/codeatlas/fingerprint.py",
       "anchor": "fingerprint_file",
-      "summary": "Computes and returns the SHA-256 hash fingerprint of the file located at the given path.",
+      "summary": "Generates a SHA-256 hash fingerprint for a file given its path, returning the hash as a hexadecimal string.",
       "children": [],
       "ext": {}
     },
@@ -214,7 +214,7 @@
       "type": "block",
       "path": "src/codeatlas/fingerprint.py",
       "anchor": "diff_fingerprints",
-      "summary": "Compares two dictionaries of fingerprints, returning a dict with keys 'added', 'deleted', 'changed', and 'unchanged', each mapping to lists of keys indicating their respective differences.",
+      "summary": "Compares two dictionaries representing 'fingerprints' and returns a dictionary detailing keys added, deleted, changed, or unchanged between them.",
       "children": [],
       "ext": {}
     },
@@ -271,7 +271,7 @@
       "type": "block",
       "path": "src/codeatlas/index.py",
       "anchor": "build_or_update",
-      "summary": "Builds or updates a deep index of a workspace by scanning files and symbols, creating nodes for each, and returning metadata about the process.",
+      "summary": "The function 'build_or_update' indexes the entire workspace by analyzing files and parsing symbols to create a hierarchical node structure, taking a root directory as input and returning a dictionary with indexing outcomes and file changes.",
       "children": [],
       "ext": {}
     },
@@ -291,7 +291,7 @@
       "type": "block",
       "path": "src/codeatlas/resolve.py",
       "anchor": "lookup_path",
-      "summary": "The function lookup_path takes a root directory and a relative path as inputs, and returns the associated path string from a JSON index if found, otherwise None.",
+      "summary": "Finds and returns the value mapped to a relative path from a JSON index where the root directory is resolved as an absolute path, or None if not found.",
       "children": [],
       "ext": {}
     },
@@ -300,7 +300,7 @@
       "type": "block",
       "path": "src/codeatlas/resolve.py",
       "anchor": "resolve_content",
-      "summary": "resolve_content takes a root directory and a node_id with prefix 'ref:path:', returning the entire text content of the file specified by the relative path encoded in node_id.",
+      "summary": "The function 'resolve_content' retrieves the entire text of a file specified by a node_id in the format 'ref:path:<relpath>' relative to a given root directory, returning the file content as a string.",
       "children": [],
       "ext": {}
     },
@@ -319,7 +319,7 @@
       "type": "block",
       "path": "src/codeatlas/ctx.py",
       "anchor": "build_ctx",
-      "summary": "build_ctx constructs a JSON-serializable context bundle for LLMs by resolving specified paths and IDs to nodes, optionally including content slices with size constraints, and reporting any encountered errors.",
+      "summary": "The 'build_ctx' function generates a JSON-serializable context bundle for LLMs by resolving node IDs from specified paths, optionally including content with limits specified by 'head', 'tail', and 'max_bytes', and returns a dictionary containing the results and errors encountered.",
       "children": [],
       "ext": {}
     },
@@ -338,7 +338,7 @@
       "type": "block",
       "path": "src/codeatlas/diff.py",
       "anchor": "compute_diff",
-      "summary": "Computes and returns the difference between previous and current file fingerprints within a specified directory, based on configuration and file scanning.",
+      "summary": "Computes the difference between old and new file fingerprints in a directory, taking a root path as input and returning a dictionary with total file count and differences.",
       "children": [],
       "ext": {}
     },
@@ -357,7 +357,7 @@
       "type": "block",
       "path": "src/codeatlas/grep.py",
       "anchor": "grep_snippets",
-      "summary": "Searches for a regex pattern in a specified file under a root directory, returning snippets with matched lines and surrounding context up to a maximum number of matches.",
+      "summary": "The function 'grep_snippets' searches for lines matching a regex pattern within a file, returning a dictionary with context lines, match details, and metadata about the search operation.",
       "children": [],
       "ext": {}
     },
@@ -376,7 +376,7 @@
       "type": "block",
       "path": "src/codeatlas/plan.py",
       "anchor": "build_plan_multi",
-      "summary": "Builds an intelligent context bundle for an LLM by resolving target files and symbol usages, producing a machine core and patch skeletons based on specified goals and operations.",
+      "summary": "The 'build_plan_multi' function creates an intelligent context bundle for a large language model by expanding relevant context from specified targets and returns details of target paths, goals, and processing instructions as a dictionary.",
       "children": [],
       "ext": {}
     },
@@ -395,7 +395,7 @@
       "type": "block",
       "path": "src/codeatlas/patch_skel.py",
       "anchor": "patch_skeleton",
-      "summary": "Generates a BridgeAI packet skeleton for replacing a symbol or file at a specified path, with optional qualname, execution commands, and commit message, returning the constructed packet as a dictionary.",
+      "summary": "Generates a packet skeleton for a BridgeAI operation to modify code, taking inputs such as file path, optional qualified name, operation type, test commands, and commit message, and outputs a dictionary detailing the operation and associated metadata.",
       "children": [],
       "ext": {}
     },
@@ -414,7 +414,7 @@
       "type": "block",
       "path": "src/codeatlas/py_extract.py",
       "anchor": "extract_qualname_source",
-      "summary": "Extracts the source code slice for a specified qualified name from a Python file at a given path, returning source lines and metadata.",
+      "summary": "Extracts and returns the source code snippet of a specified qualified name from a Python file, including optional context lines, as a dictionary with metadata.",
       "children": [],
       "ext": {}
     },
@@ -433,7 +433,7 @@
       "type": "block",
       "path": "src/codeatlas/py_symbols.py",
       "anchor": "list_python_symbols",
-      "summary": "The function list_python_symbols takes a file path as input and returns a list of dictionaries detailing the qualified names and line spans of Python symbols (functions, classes, etc.) defined in the file, requiring Python 3.10+ for end_lineno support.",
+      "summary": "Returns a list of dictionaries containing Python symbols with their qualified names and line spans from the specified file path.",
       "children": [],
       "ext": {}
     },
@@ -453,7 +453,7 @@
       "type": "block",
       "path": "src/codeatlas/apply.py",
       "anchor": "apply_change_packet",
-      "summary": "apply_change_packet applies a specified set of code modifications, run commands, and git operations to a workspace based on a change packet file, returning success status and operation results.",
+      "summary": "The `apply_change_packet` function applies changes described in a JSON packet to files in a given directory, executes specified command-line operations, and performs Git operations, returning a detailed dictionary of results and statuses.",
       "children": [],
       "ext": {}
     },
@@ -462,7 +462,7 @@
       "type": "block",
       "path": "src/codeatlas/apply.py",
       "anchor": "run_command",
-      "summary": "The run_command function executes a shell command provided as a string within a specified directory and returns a dictionary containing the command, exit code, standard output, and standard error.",
+      "summary": "Executes a shell command in a given directory and returns a dictionary containing the command, its exit code, standard output, and error output.",
       "children": [],
       "ext": {}
     },
@@ -483,7 +483,7 @@
       "type": "block",
       "path": "src/codeatlas/summarize.py",
       "anchor": "generate_summary_prompt",
-      "summary": "generate_summary_prompt is a function that takes a symbol's name and code as inputs and returns a JSON-formatted string containing a one-sentence summary describing its purpose, inputs, and outputs.",
+      "summary": "Generates a template for requesting a one-sentence summary of a Python symbol's purpose, inputs, and outputs, using the provided symbol name and code.",
       "children": [],
       "ext": {}
     },
@@ -492,7 +492,7 @@
       "type": "block",
       "path": "src/codeatlas/summarize.py",
       "anchor": "summarize_symbols",
-      "summary": "The `summarize_symbols` function generates summaries of code symbols by extracting their source code, creating prompts, optionally calling an LLM API for summaries, and saving either the summaries or prompts to files based on the `with_llm` flag.",
+      "summary": "Generates summaries for indexed symbol nodes in a given root directory, optionally using an LLM API to produce summaries or saving prompt files, based on paths and configuration files provided as inputs, and outputs a dictionary with results and status.",
       "children": [],
       "ext": {}
     },
@@ -501,7 +501,7 @@
       "type": "block",
       "path": "src/codeatlas/summarize.py",
       "anchor": "update_spec_with_summaries",
-      "summary": "Reads generated summaries and updates the nodes.jsonl and CodeAtlas.json files with these summaries based on file paths and qualified names.",
+      "summary": "Updates the CodeAtlas.json and nodes.jsonl files with summaries from the summaries directory, using the specified root path as input and returning a dictionary indicating success and number of updates made.",
       "children": [],
       "ext": {}
     },
@@ -521,7 +521,7 @@
       "type": "block",
       "path": "src/codeatlas/compression.py",
       "anchor": "compress_node",
-      "summary": "Compresses a node into a concise format with identifiers, type, children, metadata, and optionally expands content or code snippets based on node type and flags.",
+      "summary": "Converts a node dictionary to a compressed format for a generic code tree, taking inputs of a node, optional root path, and expansion flag, and outputs a transformed dictionary with compressed type, children, summary, meta information, and content data.",
       "children": [],
       "ext": {}
     },
@@ -530,7 +530,7 @@
       "type": "block",
       "path": "src/codeatlas/compression.py",
       "anchor": "build_machine_core",
-      "summary": "build_machine_core generates a compressed JSON representation of a project's node structure, optionally expanding specified nodes based on provided IDs.",
+      "summary": "Generates a compressed 'Machine Core' representation of a project by processing nodes and optionally expanding specific node IDs from a given root path, returning a dictionary with versioning and node data.",
       "children": [],
       "ext": {}
     },
@@ -549,7 +549,7 @@
       "type": "block",
       "path": "src/codeatlas/proposal.py",
       "anchor": "build_proposal_packet",
-      "summary": "Builds a self-contained proposal packet containing primary and dependent code changes for review, based on input bundle and change packet files.",
+      "summary": "The function 'build_proposal_packet' generates a self-contained review packet based on JSON input files for a bundle and a packet, identifying and categorizing changes as primary or dependent, and returns details in a structured dictionary.",
       "children": [],
       "ext": {}
     },
@@ -569,7 +569,7 @@
       "type": "block",
       "path": "src/codeatlas/humanize.py",
       "anchor": "render_proposal_yaml",
-      "summary": "render_proposal_yaml converts a proposal data dictionary into a formatted YAML string summarizing the goal, impact (files and symbols modified), and lists of primary and dependent changes.",
+      "summary": "Generates a human-readable YAML report summarizing the goal, file impact, and changes from a causal proposal packet, taking a dictionary as input and outputting a string.",
       "children": [],
       "ext": {}
     },
@@ -578,7 +578,7 @@
       "type": "block",
       "path": "src/codeatlas/humanize.py",
       "anchor": "render_project_cheatsheet",
-      "summary": "The function render_project_cheatsheet generates a YAML-formatted cheatsheet summarizing a project's file structure, classes, and functions based on a provided machine_core dictionary and an optional detail level, returning it as a string.",
+      "summary": "Generates a YAML cheatsheet detailing the project structure from a hierarchical node representation, outlining files and, at higher levels, their classes and functions, returning a formatted string.",
       "children": [],
       "ext": {}
     },
@@ -597,7 +597,7 @@
       "type": "block",
       "path": "src/codeatlas/analysis.py",
       "anchor": "find_usages_with_grep",
-      "summary": "find_usages_with_grep searches for potential usages of a specified symbol within a codebase rooted at a given directory by performing a word-boundary grep using git, returning a list of matches with file path, line number, and code line.",
+      "summary": "The function 'find_usages_with_grep' searches for occurrences of a specified symbol in a given directory using grep and returns a list of dictionaries, each containing the file path, line number, and code line where the symbol is found.",
       "children": [],
       "ext": {}
     },

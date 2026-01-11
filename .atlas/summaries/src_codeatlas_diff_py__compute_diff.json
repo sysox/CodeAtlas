@@ -1,5 +1,5 @@
 {
   "file": "src/codeatlas/diff.py",
   "qualname": "compute_diff",
-  "summary": "This function scans a given root directory for files based on configuration, computes the difference between their current and previously stored fingerprints, and returns a dictionary containing the diff and total file count."
+  "summary": "Computes the difference between old and new file fingerprints in a directory, taking a root path as input and returning a dictionary with total file count and differences."
 }

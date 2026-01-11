@@ -1,5 +1,5 @@
 {
   "file": "src/codeatlas/layout.py",
   "qualname": "AtlasPaths.nodes_path",
-  "summary": "Returns the `pathlib.Path` to the `nodes.jsonl` file located within the atlas tree directory."
+  "summary": "Returns the file path for 'nodes.jsonl' located within the 'tree_dir' directory."
 }

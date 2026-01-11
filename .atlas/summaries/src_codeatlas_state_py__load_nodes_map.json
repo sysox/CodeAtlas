@@ -1,5 +1,5 @@
 {
   "file": "src/codeatlas/state.py",
   "qualname": "load_nodes_map",
-  "summary": "Loads a list of node dictionaries from a JSONL file at the given `path` and returns a new dictionary mapping each node's string 'id' to the full node dictionary."
+  "summary": "Converts a JSON Lines file of node data from the given path into a dictionary mapping node IDs to their respective data, filtering for nodes with string IDs."
 }

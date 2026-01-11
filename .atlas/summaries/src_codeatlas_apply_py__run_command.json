@@ -1,5 +1,5 @@
 {
   "file": "src/codeatlas/apply.py",
   "qualname": "run_command",
-  "summary": "Executes a shell command string in a specified working directory and returns a dictionary containing the command's exit code, stdout, and stderr."
+  "summary": "Executes a shell command in a given directory and returns a dictionary containing the command, its exit code, standard output, and error output."
 }

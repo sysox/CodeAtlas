@@ -1,5 +1,5 @@
 {
   "file": "tests/test_patch_skel.py",
   "qualname": "test_patch_skeleton_replace_file",
-  "summary": "This test function verifies that the `patch_skeleton` function correctly creates a 'replace_file' operation packet that includes a 'content' key."
+  "summary": "Tests if the 'patch_skeleton' function correctly generates a patch operation to replace a file, verifying the 'replace_file' operation and checking if 'content' is included."
 }

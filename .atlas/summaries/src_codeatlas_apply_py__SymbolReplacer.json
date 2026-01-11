@@ -1,5 +1,5 @@
 {
   "file": "src/codeatlas/apply.py",
   "qualname": "SymbolReplacer",
-  "summary": "The SymbolReplacer is a LibCST transformer that replaces a specific function or class definition, identified by its fully qualified name, with a new code snippet provided as a string."
+  "summary": "SymbolReplacer is a LibCST transformer class that replaces a specified class or function definition identified by its qualified name with new code provided as input."
 }

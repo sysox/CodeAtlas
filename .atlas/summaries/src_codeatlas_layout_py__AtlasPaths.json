@@ -1,5 +1,5 @@
 {
   "file": "src/codeatlas/layout.py",
   "qualname": "AtlasPaths",
-  "summary": "The `AtlasPaths` class centralizes the management of file and directory paths for an Atlas project, deriving all locations from a root path and offering a method to ensure the necessary directories exist."
+  "summary": "The AtlasPaths class represents a directory structure for an 'atlas' with properties to access various subdirectories and files, and a method to ensure those directories exist, taking a root Path as input and outputting corresponding Path objects for the files and directories."
 }

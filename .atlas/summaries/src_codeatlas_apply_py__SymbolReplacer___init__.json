@@ -1,5 +1,5 @@
 {
   "file": "src/codeatlas/apply.py",
   "qualname": "SymbolReplacer.__init__",
-  "summary": "Initializes the `SymbolReplacer` instance with a target qualified name and new code, preparing internal state variables for the replacement operation."
+  "summary": "Initializes a SymbolReplacer object with a qualified name and new code, splitting the name into parts and setting up attributes for tracking replacement."
 }

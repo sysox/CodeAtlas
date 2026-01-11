@@ -1,5 +1,5 @@
 {
   "file": "tests/test_resolve.py",
   "qualname": "test_resolve_returns_file_content",
-  "summary": "This test function verifies that `resolve_content` correctly retrieves and returns the text content of a file from a workspace using its node ID."
+  "summary": "Verifies that a file's content can be correctly resolved using its node ID after setting up and updating a temporary workspace with the file."
 }

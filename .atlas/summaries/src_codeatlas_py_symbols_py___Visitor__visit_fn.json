@@ -1,5 +1,5 @@
 {
   "file": "src/codeatlas/py_symbols.py",
   "qualname": "_Visitor._visit_fn",
-  "summary": "This method processes a function or method AST node by creating a symbol record with its qualified name and line numbers, appending it to an output list, and then recursively visiting the node's children."
+  "summary": "The _visit_fn method processes an AST node representing a function or method, tracking its qualified name and type, and appending symbolic information to the output list."
 }

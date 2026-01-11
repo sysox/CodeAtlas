@@ -33,41 +33,64 @@ def _call_openai(prompt: str, api_key: str, llm_cfg: Dict[str, Any]) -> Dict[str
         return {"ok": False, "error": f"Failed to parse response: {e}"}
 
 def _call_gemini(prompt: str, api_key: str, llm_cfg: Dict[str, Any]) -> Dict[str, Any]:
-    """Handles the specific request/response format for Google Gemini APIs."""
-    model = llm_cfg.get("model", "gemini-1.5-flash")
+    """Handles the specific request/response format for Google Gemini APIs (REST v1beta)."""
+    # Use a currently supported default model (override via llm_cfg["model"])
+    model = llm_cfg.get("model", "gemini-2.0-flash")
+
+    # Base REST endpoint for models
     base_url = llm_cfg.get("endpoint_url", "https://generativelanguage.googleapis.com/v1beta/models")
-    
-    # Use header-based auth as specified
-    headers = {
-        "x-goog-api-key": api_key,
-        "Content-Type": "application/json"
-    }
     url = f"{base_url.rstrip('/')}/{model}:generateContent"
 
-    # Gemini requires a specific JSON body structure
+    # Header-based auth
+    headers = {
+        "x-goog-api-key": api_key,
+        "Content-Type": "application/json",
+    }
+
+    # Gemini request body structure
     data = {
         "contents": [
             {"role": "user", "parts": [{"text": prompt}]}
         ],
         "generationConfig": {
-            "response_mime_type": "application/json"
-        }
+            # IMPORTANT: camelCase keys for REST
+            "responseMimeType": "application/json",
+            # Optional: enforce JSON more strongly (keeps it schema-light)
+            "responseJsonSchema": {"type": "object"},
+        },
     }
+
+    def _parse_response(response_json: Dict[str, Any]) -> Dict[str, Any]:
+        # Concatenate text from all parts
+        candidates = response_json.get("candidates") or []
+        if not candidates:
+            return {"ok": False, "error": f"Gemini response missing candidates: {response_json}"}
+        content = (candidates[0].get("content") or {})
+        parts = content.get("parts") or []
+        text_content = "".join((p.get("text") or "") for p in parts).strip()
+        if not text_content:
+            return {"ok": False, "error": f"Gemini response missing text parts: {response_json}"}
+        try:
+            parsed_content = json.loads(text_content)
+        except json.JSONDecodeError as e:
+            snippet = text_content[:500]
+            return {"ok": False, "error": f"Failed to parse JSON from Gemini: {e}; text[:500]={snippet!r}"}
+        return {"ok": True, "response": parsed_content}
 
     try:
         response = requests.post(url, headers=headers, json=data, timeout=90)
         response.raise_for_status()
-        response_json = response.json()
-        
-        # Concatenate text from all parts, as specified
-        text_content = "".join(part["text"] for part in response_json["candidates"][0]["content"]["parts"])
-        
-        parsed_content = json.loads(text_content)
-        return {"ok": True, "response": parsed_content}
+        return _parse_response(response.json())
+
     except requests.RequestException as e:
-        return {"ok": False, "error": f"API request failed: {e}"}
-    except (json.JSONDecodeError, KeyError, IndexError) as e:
-        return {"ok": False, "error": f"Failed to parse response: {e}"}
+        # Fallback: some environments prefer query-param API key
+        try:
+            fallback_url = f"{url}?key={api_key}"
+            response = requests.post(fallback_url, headers={"Content-Type": "application/json"}, json=data, timeout=90)
+            response.raise_for_status()
+            return _parse_response(response.json())
+        except requests.RequestException:
+            return {"ok": False, "error": f"API request failed: {e}"}
 
 def call_llm_api(prompt: str, llm_cfg: Dict[str, Any]) -> Dict[str, Any]:
     """

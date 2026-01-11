@@ -1,5 +1,5 @@
 {
   "file": "src/codeatlas/ctx.py",
   "qualname": "build_ctx",
-  "summary": "The `build_ctx` function resolves specified file paths and node IDs within a root directory, optionally fetching, slicing, and capping their content, and returns a JSON-serializable dictionary containing the resulting items and any processing errors."
+  "summary": "The 'build_ctx' function generates a JSON-serializable context bundle for LLMs by resolving node IDs from specified paths, optionally including content with limits specified by 'head', 'tail', and 'max_bytes', and returns a dictionary containing the results and errors encountered."
 }

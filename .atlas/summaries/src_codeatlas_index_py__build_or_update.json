@@ -1,5 +1,5 @@
 {
   "file": "src/codeatlas/index.py",
   "qualname": "build_or_update",
-  "summary": "Given a `root` path, this function recursively scans the directory to build or update a hierarchical index of files and their internal code symbols, saves the results to JSON files, and returns a dictionary with summary statistics."
+  "summary": "The function 'build_or_update' indexes the entire workspace by analyzing files and parsing symbols to create a hierarchical node structure, taking a root directory as input and returning a dictionary with indexing outcomes and file changes."
 }

@@ -1,5 +1,5 @@
 {
   "file": "src/codeatlas/py_extract.py",
   "qualname": "extract_qualname_source",
-  "summary": "Given a file path and a qualified symbol name, this function extracts the corresponding source code snippet using stored AST spans and returns a dictionary containing the code, line numbers, and status."
+  "summary": "Extracts and returns the source code snippet of a specified qualified name from a Python file, including optional context lines, as a dictionary with metadata."
 }

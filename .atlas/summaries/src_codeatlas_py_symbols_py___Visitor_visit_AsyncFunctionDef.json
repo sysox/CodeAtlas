@@ -1,5 +1,5 @@
 {
   "file": "src/codeatlas/py_symbols.py",
   "qualname": "_Visitor.visit_AsyncFunctionDef",
-  "summary": "This visitor method handles an asynchronous function definition node (`ast.AsyncFunctionDef`) by delegating its processing to the `_visit_fn` method."
+  "summary": "Processes an AsyncFunctionDef node in the abstract syntax tree using the _visit_fn method."
 }

@@ -1,5 +1,5 @@
 {
   "file": "src/codeatlas/layout.py",
   "qualname": "AtlasPaths.tree_dir",
-  "summary": "Returns a `Path` object for the 'tree' directory, which is a subdirectory of the `atlas_dir`."
+  "summary": "Returns the path to the 'tree' directory located within the atlas directory."
 }

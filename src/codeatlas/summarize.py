@@ -41,7 +41,7 @@ def summarize_symbols(
     """
     root = root.resolve()
     ap = AtlasPaths(root)
-    
+
     # Load nodes from index
     nodes = load_nodes_jsonl(ap.nodes_path)
     if not nodes:
@@ -65,32 +65,32 @@ def summarize_symbols(
     for node in target_nodes:
         rp = node.get("path")
         qualname = node.get("anchor")
-        
+
         if not rp or not qualname:
             continue
-            
+
         full_path = root / rp
         if not full_path.exists():
             continue
-            
+
         # Extract source code
         extract_res = extract_qualname_source(full_path, qualname)
         if not extract_res.get("ok"):
             continue
-        
+
         code_text = extract_res["text"]
         prompt = generate_summary_prompt(qualname, code_text)
-        
+
         # Create a safe filename for the symbol
         safe_name = f"{rp.replace('/', '_').replace('.', '_')}__{qualname.replace('.', '_')}"
-        
+
         if with_llm:
             print(f"Summarizing {qualname} in {rp}...")
             llm_res = call_llm_api(prompt, llm_cfg)
             if llm_res.get("ok"):
                 response_data = llm_res["response"]
                 summary_text = response_data.get("summary", "")
-                
+
                 # Save the summary
                 out_file = summaries_dir / f"{safe_name}.json"
                 out_data = {
@@ -118,7 +118,7 @@ def update_spec_with_summaries(root: Path) -> Dict[str, Any]:
     root = root.resolve()
     ap = AtlasPaths(root)
     summaries_dir = ap.atlas_dir / "summaries"
-    
+
     if not summaries_dir.exists():
         return {"ok": False, "error": "No summaries directory found. Run 'atlas summarize' first."}
 
@@ -146,7 +146,7 @@ def update_spec_with_summaries(root: Path) -> Dict[str, Any]:
             continue
 
     updated_count = 0
-    
+
     # Update nodes.jsonl
     for node in nodes:
         if node.get("type") == "block":
@@ -157,7 +157,7 @@ def update_spec_with_summaries(root: Path) -> Dict[str, Any]:
                 if summary:
                     node["summary"] = summary
                     updated_count += 1
-    
+
     # Write back nodes.jsonl
     write_nodes_jsonl(ap.nodes_path, nodes)
 
@@ -174,5 +174,5 @@ def update_spec_with_summaries(root: Path) -> Dict[str, Any]:
                         node["summary"] = summary
         
         codeatlas_json_path.write_text(json.dumps(spec, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
-    
+
     return {"ok": True, "updated_count": updated_count}

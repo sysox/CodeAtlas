@@ -1,5 +1,5 @@
 {
   "file": "tests/test_smoke.py",
   "qualname": "test_import",
-  "summary": "Verifies that the `codeatlas` package can be successfully imported and has a `__version__` attribute."
+  "summary": "Checks if the 'codeatlas' module can be imported by asserting its version attribute."
 }

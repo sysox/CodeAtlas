@@ -1,5 +1,5 @@
 {
   "file": "src/codeatlas/humanize.py",
   "qualname": "render_project_cheatsheet.render_node",
-  "summary": "Recursively renders a node from a project map, identified by its `node_id` and an `indent` level, by formatting its details and appending the resulting strings to a shared list to build a hierarchical cheatsheet."
+  "summary": "Renders a formatted cheatsheet node by recursively processing a node's children given its ID and indent level, outputting its path or name, summary, and potentially its children."
 }

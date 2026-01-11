@@ -1,5 +1,5 @@
 {
   "file": "src/codeatlas/summarize.py",
   "qualname": "generate_summary_prompt",
-  "summary": "This function takes a symbol's name and code as strings and returns a formatted string prompt designed to instruct an AI to generate a one-sentence summary of that symbol."
+  "summary": "Generates a template for requesting a one-sentence summary of a Python symbol's purpose, inputs, and outputs, using the provided symbol name and code."
 }

@@ -1,5 +1,5 @@
 {
   "file": "src/codeatlas/py_symbols.py",
   "qualname": "_Visitor.visit_ClassDef",
-  "summary": "Upon visiting an `ast.ClassDef` node, this method constructs the class's fully qualified name, appends a symbol representing it to an output list, and recursively visits its children."
+  "summary": "This method processes an AST ClassDef node, constructs a qualified class name, appends information to an output list, and traverses nested nodes."
 }

@@ -1,0 +1,350 @@
+# === debug_index.py ===
+
+# === src/codeatlas/__init__.py ===
+
+# === src/codeatlas/analysis.py ===
+function find_usages_with_grep(root: Path, symbol: str) -> List[Dict[(str, Any)]]:
+    """Finds potential usages of a symbol using a smart grep."""
+    # Calls: code.strip, int, len, line.split, result.stdout.strip...; Reads: FileNotFoundError, cmd, code, int, len...; Writes: cmd, code, line, line_num, parts...; Effects: subprocess
+
+# === src/codeatlas/apply.py ===
+class SymbolReplacer(cst.CSTTransformer):
+    """A LibCST transformer to replace a specific function or class definition."""
+    method __init__(self, qualname: str, new_code: str) -> Any:
+        # Calls: qualname.split; Reads: List, new_code, qualname, self, str
+    method visit_ClassDef(self, node: cst.ClassDef) -> Optional[bool]:
+        # Calls: self.current_qualname_stack.append; Reads: node, self
+    method leave_ClassDef(self, original_node: cst.ClassDef, updated_node: cst.ClassDef) -> cst.CSTNode:
+        # Calls: self._leave_definable_node, self.current_qualname_stack.pop; Reads: original_node, self, updated_node
+    method visit_FunctionDef(self, node: cst.FunctionDef) -> Optional[bool]:
+        # Calls: self.current_qualname_stack.append; Reads: node, self
+    method leave_FunctionDef(self, original_node: cst.FunctionDef, updated_node: cst.FunctionDef) -> cst.CSTNode:
+        # Calls: self._leave_definable_node, self.current_qualname_stack.pop; Reads: original_node, self, updated_node
+    method _leave_definable_node(self, original_node: cst.CSTNode, updated_node: cst.CSTNode) -> cst.CSTNode:
+        """Checks if the current node matches the target qualname and replaces it."""
+        # Calls: cst.parse_module, join; Reads: cst, current_qualname, new_module, self, target_qualname...; Writes: current_qualname, new_module, target_qualname
+function apply_with_cst(source_code: str, qualname: str, new_code: str) -> Tuple[(str, bool)]:
+    """Applies a symbol replacement using LibCST."""
+    # Calls: SymbolReplacer, cst.parse_module, source_tree.visit; Reads: Exception, SymbolReplacer, cst, modified_tree, new_code...; Writes: modified_tree, source_tree, transformer
+function run_command(cmd: str, cwd: Path) -> Dict[(str, Any)]:
+    """Runs a shell command and returns the result."""
+    # Calls: shlex.split, str, subprocess.run; Reads: Exception, args, cmd, cwd, e...; Writes: args, result; Effects: subprocess
+function apply_change_packet(root: Path, packet_path: Path) -> Dict[(str, Any)]:
+    """Validates and applies a change packet to the workspace, using CST by default."""
+    # Calls: all, any, append, apply_with_cst, defaultdict...; Reads: add_cmd, all, any, apply_with_cst, cmd...; Writes: add_cmd, cmd, code_ok, commit_cmd, commit_msg...; Effects: fs, git
+
+# === src/codeatlas/cli.py ===
+function main(argv=None) -> int:
+    # Calls: AtlasPaths, Path, apply_change_packet, argparse.ArgumentParser, bool...; Reads: AtlasPaths, Path, ap, apply_change_packet, argparse...; Writes: ap, args, bundle, bundle_path, content...; Effects: fs
+
+# === src/codeatlas/compression.py ===
+function compress_node(node: Dict[(str, Any)], root: Optional[Path]=None, expand_content: bool=False) -> Dict[(str, Any)]:
+    """Compresses a single node into the Generic Code Tree format."""
+    # Calls: extract_qualname_source, extract_res.get, node.get, read_text; Reads: Exception, content, data, expand_content, extract_qualname_source...; Writes: content, data, extract_res, ntype, out; Effects: fs
+function build_machine_core(root: Path, expand_ids: Optional[List[str]]=None) -> Dict[(str, Any)]:
+    """Generates the compressed 'Machine Core' representation of the project."""
+    # Calls: AtlasPaths, compress_node, compressed_nodes.append, load_nodes_jsonl, n.get...; Reads: AtlasPaths, ap, compress_node, compressed_nodes, core...; Writes: ap, compressed_nodes, core, n, nodes...; Effects: fs
+
+# === src/codeatlas/ctx.py ===
+function _cap_bytes(s: str, max_bytes: Optional[int]) -> Tuple[(str, bool)]:
+    # Calls: len, s.encode, truncated.decode; Reads: b, len, max_bytes, out, s...; Writes: b, out, truncated
+function _slice_lines(s: str, head: Optional[int], tail: Optional[int]) -> Tuple[(str, bool)]:
+    # Calls: join, len, s.splitlines; Reads: head, len, lines, out, s...; Writes: head, lines, out, tail
+function build_ctx(root: Path, paths: List[str], ids: List[str], content: bool, head: Optional[int], tail: Optional[int], max_bytes: Optional[int]) -> Dict[(str, Any)]:
+    """Return a JSON-serializable context bundle for LLMs."""
+    # Calls: AtlasPaths, _cap_bytes, _slice_lines, bool, dedup_ids.append...; Reads: Any, AtlasPaths, Dict, Exception, List...; Writes: ap, capped, capped_flag, dedup_ids, errors...; Effects: fs
+
+# === src/codeatlas/diff.py ===
+function compute_diff(root: Path) -> Dict[(str, Any)]:
+    # Calls: AtlasPaths, build_fingerprints, cfg.get, diff_fingerprints, len...; Reads: AtlasPaths, Dict, ap, build_fingerprints, cfg...; Writes: ap, cfg, d, exclude, include...; Effects: fs
+
+# === src/codeatlas/fingerprint.py ===
+function fingerprint_file(path: Path) -> str:
+    # Calls: f.read, h.hexdigest, h.update, hashlib.sha256, iter...; Reads: chunk, f, h, hashlib, iter...; Writes: chunk, f, h; Effects: fs
+function build_fingerprints(root: Path, relpaths: Iterable[str]) -> Dict[(str, str)]:
+    # Calls: fingerprint_file, root.resolve; Reads: fingerprint_file, relpaths, root, rp; Writes: root, rp
+function diff_fingerprints(old: Dict[(str, str)], new: Dict[(str, str)]) -> Dict[(str, List[str])]:
+    # Calls: list, new.get, old.get, set, sorted; Reads: Set, added, changed, deleted, k...; Writes: added, changed, deleted, k, new_keys...
+
+# === src/codeatlas/grep.py ===
+function grep_snippets() -> Dict[(str, Any)]:
+    # Calls: enumerate, hits.append, join, len, max...; Reads: Any, Dict, List, context, e...; Writes: end, hits, i, lines, ln...; Effects: fs
+
+# === src/codeatlas/humanize.py ===
+function _generate_diff(before: str, after: str, filename: str) -> str:
+    """Generates a unified diff string."""
+    # Calls: after.splitlines, before.splitlines, difflib.unified_diff, join; Reads: after, after_lines, before, before_lines, diff...; Writes: after_lines, before_lines, diff
+function _render_changes_to_yaml(changes: List[Dict[(str, Any)]], lines: List[str]) -> Any:
+    """Helper to render a list of changes to YAML lines."""
+    # Calls: _generate_diff, append, change.get, changes_by_file.items, diff_text.splitlines...; Reads: _generate_diff, after_code, before_code, change, changes...; Writes: after_code, before_code, change, changes_by_file, diff_line...
+function render_proposal_yaml(proposal_data: Dict[(str, Any)]) -> str:
+    """Renders a human-readable YAML report from a causal proposal packet."""
+    # Calls: _render_changes_to_yaml, c.get, join, len, lines.append...; Reads: _render_changes_to_yaml, all_changes, c, dependent_changes, files_touched...; Writes: all_changes, c, dependent_changes, files_touched, goal...
+function render_project_cheatsheet(machine_core: Dict[(str, Any)], level: int=1) -> str:
+    """Renders a YAML cheatsheet of the project structure."""
+    # Calls: anchor.split, get, join, lines.append, machine_core.get...; Reads: anchor, child_id, children, indent, int...; Writes: anchor, child_id, children, lines, n...
+    method render_node(node_id: str, indent: int) -> Any:
+        # Calls: anchor.split, get, lines.append, node.get, node_map.get...; Reads: anchor, child_id, children, indent, level...; Writes: anchor, child_id, children, name, node...
+
+# === src/codeatlas/index.py ===
+function _kind_from_path(relpath: str) -> str:
+    # Calls: relpath.lower, rp.endswith; Reads: relpath, rp; Writes: rp; Effects: fs
+function build_or_update(root: Path) -> Dict[(str, Any)]:
+    """Performs a deep index of the workspace, creating nodes for files and symbols."""
+    # Calls: AtlasPaths, Node, _kind_from_path, all_nodes.append, ap.ensure_dirs...; Reads: Any, AtlasPaths, Dict, Exception, FileNotFoundError...; Writes: all_nodes, ap, cfg, diff, exclude...; Effects: fs
+
+# === src/codeatlas/layout.py ===
+@dataclass(frozen=True)
+class AtlasPaths:
+    @property
+    method atlas_dir(self) -> Path:
+        # Reads: self
+    @property
+    method cfg_path(self) -> Path:
+        # Reads: self
+    @property
+    method tree_dir(self) -> Path:
+        # Reads: self
+    @property
+    method nodes_path(self) -> Path:
+        # Reads: self
+    @property
+    method index_dir(self) -> Path:
+        # Reads: self
+    @property
+    method paths_index_path(self) -> Path:
+        # Reads: self
+    @property
+    method fingerprints_path(self) -> Path:
+        # Reads: self
+    @property
+    method blobs_dir(self) -> Path:
+        # Reads: self
+    @property
+    method log_dir(self) -> Path:
+        # Reads: self
+    method ensure_dirs(self) -> None:
+        # Calls: self.atlas_dir.mkdir, self.blobs_dir.mkdir, self.index_dir.mkdir, self.log_dir.mkdir, self.tree_dir.mkdir; Reads: self
+
+# === src/codeatlas/llm.py ===
+function _call_openai(prompt: str, api_key: str, llm_cfg: Dict[(str, Any)]) -> Dict[(str, Any)]:
+    """Handles the specific request/response format for OpenAI APIs."""
+    # Calls: json.loads, llm_cfg.get, requests.post, response.json, response.raise_for_status; Reads: IndexError, KeyError, api_key, data, e...; Writes: data, endpoint_url, headers, message_content, model...; Effects: network
+function _call_gemini(prompt: str, api_key: str, llm_cfg: Dict[(str, Any)]) -> Dict[(str, Any)]:
+    """Handles the specific request/response format for Google Gemini APIs (REST v1beta)."""
+    # Calls: _parse_response, base_url.rstrip, content.get, get, join...; Reads: Any, Dict, _parse_response, api_key, base_url...; Writes: base_url, candidates, content, data, fallback_url...; Effects: network
+    method _parse_response(response_json: Dict[(str, Any)]) -> Dict[(str, Any)]:
+        # Calls: content.get, get, join, json.loads, p.get...; Reads: candidates, content, e, json, p...; Writes: candidates, content, p, parsed_content, parts...
+function call_llm_api(prompt: str, llm_cfg: Dict[(str, Any)]) -> Dict[(str, Any)]:
+    """Calls the configured LLM API with the given prompt and returns the JSON response."""
+    # Calls: _call_gemini, _call_openai, llm_cfg.get, lower, os.getenv; Reads: _call_gemini, _call_openai, api_key, api_key_env_var, llm_cfg...; Writes: api_key, api_key_env_var, provider; Effects: fs
+
+# === src/codeatlas/model.py ===
+@dataclass
+class Node:
+    method to_dict(self) -> Dict[(str, Any)]:
+        # Calls: dict, list; Reads: Any, Dict, d, dict, list...; Writes: d
+    @staticmethod
+    method from_dict(d: Dict[(str, Any)]) -> 'Node':
+        # Calls: Node, d.get, dict, list; Reads: Node, d, dict, list
+function make_id(kind: str, relpath: str, anchor: str | None=None) -> str:
+    """Deterministic IDs. v1 uses file-level ids; later add kind+anchor schemes."""
+    # Reads: anchor, kind, relpath
+
+# === src/codeatlas/overview.py ===
+function render_human_overview(machine_core: Dict[(str, Any)]) -> str:
+    """Renders a high-level Markdown overview of the project for humans."""
+    # Calls: child.get, get, join, lines.append, machine_core.get...; Reads: child, child_id, child_summary, children, file_node_id...; Writes: child, child_id, child_summary, children, kind...; Effects: fs
+    method render_file_overview(file_node_id: str) -> Any:
+        # Calls: child.get, get, lines.append, node.get, node_map.get...; Reads: child, child_id, child_summary, children, file_node_id...; Writes: child, child_id, child_summary, children, kind...; Effects: fs
+
+# === src/codeatlas/patch_skel.py ===
+function patch_skeleton() -> Dict[(str, Any)]:
+    """Create a BridgeAI packet skeleton."""
+    # Calls: ValueError, ops.append; Reads: Any, Dict, List, ValueError, commit...; Writes: op, ops, pkt
+
+# === src/codeatlas/plan.py ===
+@dataclass(frozen=True)
+class Target:
+function parse_target(s: str) -> Target:
+    """Parse 'path' or 'path::qualname'."""
+    # Calls: Target, p.strip, q.strip, s.split, s.strip; Reads: Target, p, q, s; Writes: p, q
+function build_plan() -> Dict[(str, Any)]:
+    """Backward-compatible single-target plan."""
+    # Calls: Target, build_plan_multi; Reads: Target, build_plan_multi, commit, content, goal...
+function build_plan_multi() -> Dict[(str, Any)]:
+    """Builds an intelligent context bundle for an LLM."""
+    # Calls: build_machine_core, expand_ids.add, find_usages_with_grep, list, lookup_path...; Reads: Any, Dict, List, Set, build_machine_core...; Writes: chosen_op, expand_ids, machine_core, patches, root...; Effects: fs
+function render_prompt_text(bundle: Dict[(str, Any)]) -> str:
+    """Render the JSON bundle into a text prompt for an LLM."""
+    # Calls: bundle.get, json.dumps, prompt.strip; Reads: bundle, goal, json, machine_core, patches_skeleton...; Writes: goal, machine_core, patches_skeleton, prompt
+
+# === src/codeatlas/proposal.py ===
+function build_proposal_packet(bundle_path: Path, packet_path: Path) -> Dict[(str, Any)]:
+    """Creates a self-contained, causal proposal packet for review."""
+    # Calls: Path, bundle.get, bundle_path.exists, bundle_path.read_text, data.get...; Reads: Optional, Path, bundle, bundle_path, change_detail...; Writes: bundle, change_detail, data, dependent_changes, full_path...; Effects: fs
+    method get_before_code(path_str: str, qualname: Optional[str]=None) -> str:
+        # Calls: data.get, extract_qualname_source, full_path.exists, full_path.read_text; Reads: data, extract_qualname_source, full_path, path_str, qualname...; Writes: data, full_path; Effects: fs
+
+# === src/codeatlas/py_enrich.py ===
+function get_annotation(node: ast.AST) -> str:
+    """Recursively stringifies a type annotation node."""
+    # Calls: ast.unparse, get_annotation, isinstance, join, repr; Reads: AttributeError, ast, e, get_annotation, isinstance...; Writes: e, slice_val, value
+class EnrichmentVisitor(ast.NodeVisitor):
+    method __init__(self) -> Any:
+        # Calls: set; Reads: Set, self, set, str
+    method visit_Call(self, node: ast.Call) -> Any:
+        # Calls: self._check_effects, self._get_call_name, self.calls.add, self.generic_visit; Reads: name, node, self; Writes: name
+    method _get_call_name(self, node: ast.AST) -> Optional[str]:
+        # Calls: isinstance, self._get_call_name; Reads: ast, base, isinstance, node, self; Writes: base
+    method _check_effects(self, name: str) -> Any:
+        """Heuristic for side effects based on called names."""
+        # Calls: name.lower, self.effects.add; Reads: lower_name, name, self; Writes: lower_name
+    method visit_Name(self, node: ast.Name) -> Any:
+        # Calls: isinstance, self.reads.add, self.writes.add; Reads: ast, isinstance, node, self; Effects: fs
+function enrich_symbol(node: ast.AST) -> Dict[(str, Any)]:
+    """Analyzes an AST node (FunctionDef or ClassDef) to extract rich metadata."""
+    # Calls: EnrichmentVisitor, append, ast.get_docstring, ast.unparse, enumerate...; Reads: AttributeError, EnrichmentVisitor, arg, arg_meta, ast...; Writes: arg, arg_meta, b, dec, default_idx...
+
+# === src/codeatlas/py_extract.py ===
+function extract_qualname_source(path: Path, qualname: str) -> Dict[(str, Any)]:
+    """Extract the exact source slice for a qualname using stored AST spans."""
+    # Calls: hit.get, int, join, len, list_python_symbols...; Reads: context, e0, end, hit, int...; Writes: e0, end, hit, lines, s...; Effects: fs
+
+# === src/codeatlas/py_symbols.py ===
+@dataclass
+class Sym:
+    method to_dict(self) -> Dict[(str, Any)]:
+        # Reads: self
+class _Visitor(ast.NodeVisitor):
+    method __init__(self) -> None:
+        # Reads: List, Sym, self, str
+    method visit_ClassDef(self, node: ast.ClassDef) -> Any:
+        # Calls: Sym, getattr, join, self.generic_visit, self.out.append...; Reads: Sym, getattr, name, node, qn...; Writes: name, qn
+    method visit_FunctionDef(self, node: ast.FunctionDef) -> Any:
+        # Calls: self._visit_fn; Reads: node, self
+    method visit_AsyncFunctionDef(self, node: ast.AsyncFunctionDef) -> Any:
+        # Calls: self._visit_fn; Reads: node, self
+    method _visit_fn(self, node: ast.AST) -> Any:
+        # Calls: Sym, getattr, join, self.generic_visit, self.out.append...; Reads: Sym, getattr, kind, name, node...; Writes: kind, name, qn
+function list_python_symbols(path: Path) -> List[Dict[(str, Any)]]:
+    """Return symbols (qualnames + line spans). Legacy wrapper."""
+    # Calls: parse_symbols, s.to_dict; Reads: parse_symbols, path, s, syms; Writes: s, syms
+function parse_symbols(path: Path) -> List[Sym]:
+    """Return Sym objects with AST nodes attached."""
+    # Calls: _Visitor, ast.parse, path.read_text, v.out.sort, v.visit; Reads: SyntaxError, _Visitor, ast, path, s...; Writes: src, tree, v; Effects: fs
+
+# === src/codeatlas/resolve.py ===
+function lookup_path(root: Path, relpath: str) -> Optional[str]:
+    # Calls: AtlasPaths, idx.get, load_json, root.resolve; Reads: AtlasPaths, ap, idx, load_json, relpath...; Writes: ap, idx; Effects: fs
+function resolve_node(root: Path, node_id: str) -> Optional[Dict[(str, Any)]]:
+    # Calls: AtlasPaths, load_nodes_map, nodes.get, root.resolve; Reads: AtlasPaths, ap, load_nodes_map, node_id, nodes...; Writes: ap, nodes; Effects: fs
+function resolve_content(root: Path, node_id: str) -> str:
+    """v1: node_id for files is ref:path:<relpath> → return whole file text."""
+    # Calls: ValueError, len, node_id.startswith, p.read_text, root.resolve; Reads: ValueError, len, node_id, p, prefix...; Writes: p, prefix, relpath, root; Effects: fs
+
+# === src/codeatlas/scan.py ===
+function _match_any(path_posix: str, patterns: Iterable[str]) -> bool:
+    # Calls: any, fnmatch.fnmatch; Reads: any, fnmatch, pat, path_posix, patterns; Writes: pat
+function scan_files(root: Path, include: List[str], exclude: List[str]) -> List[str]:
+    """Return list of relative POSIX paths to index (stable sorted)."""
+    # Calls: Path, _match_any, as_posix, dirnames.remove, drel.as_posix...; Reads: List, Path, _match_any, dirnames, dirpath...; Writes: dirnames, dirpath, dn, drel, drel_posix...; Effects: fs
+
+# === src/codeatlas/skeleton.py ===
+function render_llm_skeleton(machine_core: Dict[(str, Any)]) -> str:
+    """Renders a dense, token-efficient skeleton of the project for LLMs."""
+    # Calls: annotations.append, arg.get, arg_strs.append, get, join...; Reads: a, annotations, arg, arg_strs, args...; Writes: a, annotations, arg, arg_strs, args...; Effects: fs
+    method render_file(file_node_id: str) -> Any:
+        # Calls: get, lines.append, node.get, node_map.get, path.endswith...; Reads: child_id, children, file_node_id, lines, node...; Writes: child_id, children, node, path; Effects: fs
+    method render_symbol(symbol_id: str, indent: int) -> Any:
+        # Calls: annotations.append, arg.get, arg_strs.append, get, join...; Reads: a, annotations, arg, arg_strs, args...; Writes: a, annotations, arg, arg_strs, args...
+
+# === src/codeatlas/state.py ===
+function load_json(path: Path, default) -> Any:
+    # Calls: json.loads, path.exists, path.read_text, strip; Reads: default, json, path, txt; Writes: txt; Effects: fs
+function write_json(path: Path, obj) -> None:
+    # Calls: json.dumps, path.parent.mkdir, path.write_text; Reads: json, obj, path; Effects: fs
+function load_nodes_jsonl(path: Path) -> List[Dict[(str, Any)]]:
+    # Calls: json.loads, line.strip, out.append, path.exists, path.read_text...; Reads: Any, Dict, List, json, line...; Writes: line, out; Effects: fs
+function load_nodes_map(path: Path) -> Dict[(str, Dict[(str, Any)])]:
+    # Calls: isinstance, load_nodes_jsonl, n.get; Reads: Any, Dict, isinstance, load_nodes_jsonl, n...; Writes: n, nid, nodes, out
+function write_nodes_jsonl(path: Path, nodes: Iterable[Dict[(str, Any)]]) -> None:
+    # Calls: join, json.dumps, path.parent.mkdir, path.write_text; Reads: json, lines, n, nodes, path; Writes: lines, n; Effects: fs
+
+# === src/codeatlas/store_init.py ===
+function init_workspace(root: Path) -> AtlasPaths:
+    """Create .atlas layout and default cfg.json if missing."""
+    # Calls: AtlasPaths, ap.cfg_path.exists, ap.cfg_path.write_text, ap.ensure_dirs, ap.fingerprints_path.exists...; Reads: AtlasPaths, DEFAULT_CFG, DEFAULT_LLM_CFG, ap, json...; Writes: ap, llm_cfg_path, root; Effects: fs
+
+# === src/codeatlas/summarize.py ===
+function generate_summary_prompt(symbol_name: str, symbol_code: str) -> str:
+    # Calls: strip; Reads: symbol_code, symbol_name
+function summarize_symbols(root: Path, paths: Optional[List[str]]=None, with_llm: bool=False) -> Dict[(str, Any)]:
+    """Iterates over indexed symbol nodes and generates summary prompts."""
+    # Calls: AtlasPaths, call_llm_api, extract_qualname_source, extract_res.get, full_path.exists...; Reads: AtlasPaths, ap, call_llm_api, code_text, extract_qualname_source...; Writes: ap, code_text, extract_res, full_path, llm_cfg...; Effects: fs
+function update_spec_with_summaries(root: Path) -> Dict[(str, Any)]:
+    """Reads generated summaries and updates CodeAtlas.json AND nodes.jsonl."""
+    # Calls: AtlasPaths, codeatlas_json_path.exists, codeatlas_json_path.read_text, codeatlas_json_path.write_text, data.get...; Reads: AtlasPaths, anchor, ap, codeatlas_json_path, data...; Writes: anchor, ap, codeatlas_json_path, data, f...; Effects: fs
+
+# === tests/test_apply.py ===
+function test_apply_replace_symbol(tmp_path: Path) -> Any:
+    # Calls: apply_change_packet, file_path.read_text, file_path.write_text, json.dumps, lstrip...; Reads: apply_change_packet, file_path, json, new_content, new_function_code...; Writes: file_path, new_content, new_function_code, original_code, packet...; Effects: fs
+function test_apply_replace_nested_symbol(tmp_path: Path) -> Any:
+    # Calls: apply_change_packet, file_path.read_text, file_path.write_text, json.dumps, lstrip...; Reads: apply_change_packet, file_path, json, new_content, new_method_code...; Writes: file_path, new_content, new_method_code, original_code, packet...; Effects: fs
+function test_apply_multiple_replacements(tmp_path: Path) -> Any:
+    # Calls: apply_change_packet, file_path.read_text, file_path.write_text, json.dumps, len...; Reads: apply_change_packet, file_path, json, len, new_content...; Writes: file_path, new_content, original_code, packet, packet_path...; Effects: fs
+
+# === tests/test_ctx.py ===
+function test_ctx_returns_items_and_content(tmp_path: Path) -> Any:
+    # Calls: build_ctx, build_or_update, init_workspace, write_text; Reads: build_ctx, build_or_update, init_workspace, item, out...; Writes: item, out; Effects: fs
+function test_ctx_max_bytes_truncates(tmp_path: Path) -> Any:
+    # Calls: build_ctx, build_or_update, init_workspace, write_text; Reads: build_ctx, build_or_update, init_workspace, item, out...; Writes: item, out; Effects: fs
+
+# === tests/test_diff.py ===
+function test_diff_added_changed_deleted(tmp_path: Path) -> Any:
+    # Calls: build_or_update, compute_diff, init_workspace, unlink, write_text; Reads: build_or_update, compute_diff, d, init_workspace, tmp_path; Writes: d; Effects: fs
+
+# === tests/test_grep.py ===
+function test_grep_snippets_basic(tmp_path: Path) -> Any:
+    # Calls: grep_snippets, write_text; Reads: grep_snippets, m, out, tmp_path; Writes: m, out; Effects: fs
+function test_grep_invalid_regex(tmp_path: Path) -> Any:
+    # Calls: grep_snippets, write_text; Reads: grep_snippets, out, tmp_path; Writes: out; Effects: fs
+
+# === tests/test_index_basic.py ===
+function test_index_creates_paths_index_and_meta(tmp_path: Path) -> Any:
+    # Calls: AtlasPaths, build_or_update, get, init_workspace, isinstance...; Reads: AtlasPaths, a_id, a_node, ap, build_or_update...; Writes: a_id, a_node, ap, idx, nodes...; Effects: fs
+
+# === tests/test_init.py ===
+function test_init_creates_atlas_layout(tmp_path: Path) -> Any:
+    # Calls: ap.atlas_dir.exists, ap.cfg_path.exists, ap.fingerprints_path.exists, ap.index_dir.exists, ap.nodes_path.exists...; Reads: ap, init_workspace, tmp_path; Writes: ap; Effects: fs
+
+# === tests/test_patch_skel.py ===
+function test_patch_skeleton_replace_symbol() -> Any:
+    # Calls: patch_skeleton; Reads: patch_skeleton, pkt; Writes: pkt
+function test_patch_skeleton_replace_file() -> Any:
+    # Calls: patch_skeleton; Reads: patch_skeleton, pkt; Writes: pkt
+
+# === tests/test_plan.py ===
+function test_plan_includes_machine_core_and_patch(tmp_path: Path) -> Any:
+    # Calls: build_or_update, build_plan, core.get, get, init_workspace...; Reads: build_or_update, build_plan, core, file_node, init_workspace...; Writes: core, file_node, n, nodes, out; Effects: fs
+
+# === tests/test_plan_multi.py ===
+function test_plan_multi_two_targets(tmp_path: Path) -> Any:
+    # Calls: Target, build_or_update, build_plan_multi, init_workspace, len...; Reads: Target, build_or_update, build_plan_multi, init_workspace, it...; Writes: it, out, paths, s, snips; Effects: fs
+
+# === tests/test_py_extract.py ===
+function test_extract_qualname_source(tmp_path: Path) -> Any:
+    # Calls: extract_qualname_source, lstrip, p.write_text; Reads: extract_qualname_source, out, out2, p, tmp_path; Writes: out, out2, p; Effects: fs
+
+# === tests/test_py_symbols.py ===
+function test_py_symbols_basic(tmp_path: Path) -> Any:
+    # Calls: list_python_symbols, lstrip, p.write_text; Reads: list_python_symbols, p, qns, s, syms...; Writes: p, qns, s, syms; Effects: fs
+
+# === tests/test_resolve.py ===
+function test_resolve_returns_file_content(tmp_path: Path) -> Any:
+    # Calls: build_or_update, init_workspace, lookup_path, resolve_content, write_text; Reads: build_or_update, content, init_workspace, lookup_path, nid...; Writes: content, nid; Effects: fs
+
+# === tests/test_smoke.py ===
+function test_import() -> Any:
+    # Reads: codeatlas
+

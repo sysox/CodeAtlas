@@ -1,5 +1,5 @@
 {
   "file": "tests/test_apply.py",
   "qualname": "test_apply_replace_symbol",
-  "summary": "This test function verifies that applying a `replace_symbol` change packet correctly replaces a specified function's code in a file while leaving other symbols untouched."
+  "summary": "Tests the `apply_change_packet` function by verifying it correctly replaces the Python function `my_function` in a file with new code specified in a change packet, while ensuring other code remains unchanged."
 }

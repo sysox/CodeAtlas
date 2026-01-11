@@ -1,5 +1,5 @@
 {
   "file": "src/codeatlas/layout.py",
   "qualname": "AtlasPaths.fingerprints_path",
-  "summary": "Returns a `Path` object for the `fingerprints.json` file located in the `tree_dir` directory."
+  "summary": "Returns the file path to 'fingerprints.json' within the tree directory."
 }

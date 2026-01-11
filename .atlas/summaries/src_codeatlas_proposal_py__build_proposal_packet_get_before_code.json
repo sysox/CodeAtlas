@@ -1,5 +1,5 @@
 {
   "file": "src/codeatlas/proposal.py",
   "qualname": "build_proposal_packet.get_before_code",
-  "summary": "Given a file path and an optional qualified name, this function retrieves either the entire file's source code or the specific symbol's code, returning an error string if the file or symbol cannot be found."
+  "summary": "Retrieves the source code of a symbol identified by its path and optional qualified name, returning the content as a string or an error message if the file or symbol is not found."
 }

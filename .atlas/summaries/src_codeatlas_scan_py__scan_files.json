@@ -1,5 +1,5 @@
 {
   "file": "src/codeatlas/scan.py",
   "qualname": "scan_files",
-  "summary": "Recursively scans a directory from a given `root` path, filters files and directories based on `include` and `exclude` glob patterns, and returns a sorted list of relative POSIX paths for the matched files."
+  "summary": "The function 'scan_files' returns a stable sorted list of relative POSIX paths for files within a specified root directory that match inclusion patterns and do not match exclusion patterns."
 }
